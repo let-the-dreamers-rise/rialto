@@ -1,0 +1,46 @@
+{
+ "scenario": "a-optimal",
+ "data": {
+  "source": "European Central Bank, ECB Data Portal, series EXR.D.USD.EUR.SP00.A (daily USD per 1 EUR reference rate)",
+  "url": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A",
+  "days": 259,
+  "from": "2025-09-01",
+  "to": "2026-09-04"
+ },
+ "params": {
+  "amp": "200",
+  "feePpm": "400",
+  "protocolSharePpm": "500000",
+  "organicTradesPerDay": 6
+ },
+ "pools": {
+  "A": {
+   "key": "A",
+   "reserve0": "2138079487032",
+   "reserve1": "70357702552",
+   "lpValue": "2219849208937934400000000",
+   "holdValue": "2332965507712737600000000",
+   "pnl": "-113116298774803200000000",
+   "pnlBps": "-484",
+   "protocolRevenue": "13108807577619200000000",
+   "arbCount": 259,
+   "arbProfit": "1595495600290948200000000",
+   "volume": "60980657021497",
+   "label": "1:1 stableswap"
+  },
+  "B": {
+   "key": "B",
+   "reserve0": "1309668936886",
+   "reserve1": "889459027163",
+   "lpValue": "2343398218254838600000000",
+   "holdValue": "2333700000000000000000000",
+   "pnl": "9698218254838600000000",
+   "pnlBps": "41",
+   "protocolRevenue": "11784545161253000000000",
+   "arbCount": 164,
+   "arbProfit": "4444656873599200000000",
+   "volume": "54820427188438",
+   "label": "rate-anchored"
+  }
+ }
+}

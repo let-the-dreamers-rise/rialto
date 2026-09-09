@@ -1,0 +1,29 @@
+{
+  "name": "rialto",
+  "version": "1.0.0",
+  "description": "Stablecoin FX on Arc: a pull-based signed rate oracle and a rate-anchored stableswap",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node --test --test-concurrency=1 test/*.test.mjs",
+    "node": "npx hardhat node",
+    "compile": "node scripts/compile.mjs",
+    "deploy": "node scripts/deploy.mjs",
+    "simulate": "bash scripts/run-simulation.sh",
+    "preflight": "node scripts/preflight.mjs",
+    "corridors": "bash scripts/run-corridors.sh"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": "true",
+  "type": "module",
+  "dependencies": {
+    "hardhat": "^2.29.1",
+    "playwright-core": "^1.63.0",
+    "solc": "^0.8.28",
+    "viem": "^2.56.3"
+  }
+}

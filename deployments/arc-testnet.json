@@ -1,0 +1,23 @@
+{
+  "network": "arc-testnet",
+  "chainId": 5042002,
+  "rpc": "https://rpc.testnet.arc.io",
+  "usdc": "0x3600000000000000000000000000000000000000",
+  "eurc": "0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a",
+  "oracle": "0x391c05393778eae959cf16296e308d5538c5754f",
+  "rateSource": "0xda0a00a82455d6a28b4695be97e6fdbfb4d18198",
+  "pool": "0xee754d16908335a13c0c2b938a8c897a9cf694c4",
+  "treasury": "0xf42d1bD7DBE9FC9099C419070AAbB8086A3Fe4f5",
+  "pair": "EUR/USD",
+  "pairId": "0xa9226449042e36bf6865099eec57482aa55e3ad026c315a0e4a692b776c318ca",
+  "amp": "200",
+  "feePpm": "400",
+  "protocolSharePpm": "500000",
+  "publishers": [
+    "0xf42d1bD7DBE9FC9099C419070AAbB8086A3Fe4f5"
+  ],
+  "quorum": "1",
+  "maxRateAge": "900",
+  "deployer": "0xf42d1bD7DBE9FC9099C419070AAbB8086A3Fe4f5",
+  "deployedAt": "2026-09-09T18:26:18.546Z"
+}

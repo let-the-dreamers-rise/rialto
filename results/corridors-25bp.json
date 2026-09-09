@@ -1,0 +1,179 @@
+{
+ "source": "European Central Bank, ECB Data Portal, series EXR.D.<CUR>.EUR.SP00.A; USD-crosses derived by dividing the EUR cross by EUR/USD on the same day",
+ "url": "https://data-api.ecb.europa.eu/service/data/EXR/",
+ "params": {
+  "amp": "200",
+  "feePpm": "2500",
+  "sampling": "weekly"
+ },
+ "results": [
+  {
+   "pair": "USD/BRL",
+   "rate0": 0.18423575691786845,
+   "steps": 52,
+   "rangePct": 14,
+   "A": {
+    "openedPool": true,
+    "reserve0": "66483385468",
+    "reserve1": "6735204609150",
+    "lpValue": "1361994572526053742647493",
+    "holdValue": "2044038348274377714247360",
+    "pnlBps": "-3336",
+    "arbLoss": "1014751748818185334921207",
+    "volume": "13197577839100",
+    "protocolRevenue": "5845481626223540273601"
+   },
+   "B": {
+    "openedPool": true,
+    "reserve0": "914826976940",
+    "reserve1": "5904581613233",
+    "lpValue": "2050568499097857961915863",
+    "holdValue": "2044038348274377714247360",
+    "pnlBps": "31",
+    "arbLoss": "71173932308034977327",
+    "volume": "10161092154773",
+    "protocolRevenue": "4012235110015635006537"
+   }
+  },
+  {
+   "pair": "USD/ZAR",
+   "rate0": 0.05688329056183911,
+   "steps": 52,
+   "rangePct": 13.5,
+   "A": {
+    "openedPool": true,
+    "reserve0": "101003915570",
+    "reserve1": "20277232618369",
+    "lpValue": "1356107500405351046099545",
+    "holdValue": "2088143507876787987742450",
+    "pnlBps": "-3505",
+    "arbLoss": "1021560375930079453482501",
+    "volume": "37125156967347",
+    "protocolRevenue": "5970614915707964196874"
+   },
+   "B": {
+    "openedPool": true,
+    "reserve0": "919631555527",
+    "reserve1": "19014533303815",
+    "lpValue": "2096577609396799550253329",
+    "holdValue": "2088143507876787987742450",
+    "pnlBps": "40",
+    "arbLoss": "62538669403646989811",
+    "volume": "28983997578620",
+    "protocolRevenue": "4068953945123983572011"
+   }
+  },
+  {
+   "pair": "USD/PHP",
+   "rate0": 0.017488989937552237,
+   "steps": 52,
+   "rangePct": 10.4,
+   "A": {
+    "openedPool": true,
+    "reserve0": "146904390944",
+    "reserve1": "67757197770882",
+    "lpValue": "1232255674879601705320594",
+    "holdValue": "1915904430546802955309050",
+    "pnlBps": "-3568",
+    "arbLoss": "880996854899051905930075",
+    "volume": "130914499368070",
+    "protocolRevenue": "5834298910355042468494"
+   },
+   "B": {
+    "openedPool": true,
+    "reserve0": "862716562423",
+    "reserve1": "65400325406506",
+    "lpValue": "1910314891234959926778339",
+    "holdValue": "1915904430546802955309050",
+    "pnlBps": "-29",
+    "arbLoss": "73463644051941442237",
+    "volume": "99810940488670",
+    "protocolRevenue": "3862118068723663329590"
+   }
+  },
+  {
+   "pair": "USD/INR",
+   "rate0": 0.011338285503380646,
+   "steps": 52,
+   "rangePct": 10.3,
+   "A": {
+    "openedPool": true,
+    "reserve0": "175468475583",
+    "reserve1": "106020309784807",
+    "lpValue": "1292044704629281857342034",
+    "holdValue": "1928863549149025949945332",
+    "pnlBps": "-3301",
+    "arbLoss": "809667850724300653573151",
+    "volume": "203752414169044",
+    "protocolRevenue": "5878316917554038054516"
+   },
+   "B": {
+    "openedPool": true,
+    "reserve0": "856685025697",
+    "reserve1": "101213702185179",
+    "lpValue": "1922639408806486354077481",
+    "holdValue": "1928863549149025949945332",
+    "pnlBps": "-32",
+    "arbLoss": "68119278201361069759",
+    "volume": "153118412558743",
+    "protocolRevenue": "3882997121480862119216"
+   }
+  },
+  {
+   "pair": "USD/TRY",
+   "rate0": 0.024322237147698173,
+   "steps": 52,
+   "rangePct": 17.8,
+   "A": {
+    "openedPool": true,
+    "reserve0": "122843133018",
+    "reserve1": "48560056462112",
+    "lpValue": "1128764607641485147967785",
+    "holdValue": "1851689666459944725628387",
+    "pnlBps": "-3904",
+    "arbLoss": "931393810972939875771783",
+    "volume": "96347979176211",
+    "protocolRevenue": "5715003210397435445490"
+   },
+   "B": {
+    "openedPool": true,
+    "reserve0": "834602357528",
+    "reserve1": "48023857533908",
+    "lpValue": "1829416472402607269974523",
+    "holdValue": "1851689666459944725628387",
+    "pnlBps": "-120",
+    "arbLoss": "59568768646105563348",
+    "volume": "74255129111931",
+    "protocolRevenue": "3763895093845773093676"
+   }
+  },
+  {
+   "pair": "EUR/USD",
+   "rate0": 1.1715,
+   "steps": 52,
+   "rangePct": 5.6,
+   "A": {
+    "openedPool": true,
+    "reserve0": "1755309520520",
+    "reserve1": "118999403534",
+    "lpValue": "1893229829215906000000000",
+    "holdValue": "1989329918907031000000000",
+    "pnlBps": "-483",
+    "arbLoss": "151118569347808300000000",
+    "volume": "4551204357311",
+    "protocolRevenue": "6166067466886000000000"
+   },
+   "B": {
+    "openedPool": true,
+    "reserve0": "877749086019",
+    "reserve1": "956031390728",
+    "lpValue": "1985789467872752000000000",
+    "holdValue": "1989329918907031000000000",
+    "pnlBps": "-17",
+    "arbLoss": "64789849121900000000",
+    "volume": "2933761718982",
+    "protocolRevenue": "3957475025770000000000"
+   }
+  }
+ ]
+}
