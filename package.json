@@ -13,7 +13,8 @@
     "deploy": "node scripts/deploy.mjs",
     "simulate": "bash scripts/run-simulation.sh",
     "preflight": "node scripts/preflight.mjs",
-    "corridors": "bash scripts/run-corridors.sh"
+    "corridors": "bash scripts/run-corridors.sh",
+    "verify": "node scripts/verify.mjs"
   },
   "keywords": [],
   "author": "",

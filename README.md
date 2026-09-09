@@ -16,8 +16,11 @@ Reading the rate takes one call and no permission:
         .getRate(keccak256("EUR/USD"), 900);   // reverts if older than your bound
 ```
 
-An update costs **0.0017 USDC**. Anyone on Arc can read it — it is not ours to keep, and
-nothing on that chain could read an FX rate before it existed.
+All three are **source-verified on Arcscan**, so the code at those addresses can be read
+rather than trusted. An update costs **0.0017 USDC**. Anyone on Arc can read the feed — it is
+not ours to keep, and nothing on that chain could read an FX rate before it existed.
+
+Reproduce the verification with `npm run verify`.
 
 ---
 
