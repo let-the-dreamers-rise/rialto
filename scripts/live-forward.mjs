@@ -69,7 +69,10 @@ const FWD = art('RialtoForward').abi
 const ORACLE = art('RialtoOracle').abi
 
 const bal6 = (a) => pub.readContract({ address: rec.usdc, abi: USDC, functionName: 'balanceOf', args: [a] })
-const usd = (v) => `${formatUnits(v, 6)} USDC`
+// Two decimals and thousands separators everywhere, so the ledger on the page reads the
+// way a statement does rather than the way a uint256 does.
+const usd = (v) => `${Number(formatUnits(v, 6)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`
+const eur = (v) => `EUR ${Number(formatUnits(v, 6)).toLocaleString('en-US')}`
 
 // Each send waits for its receipt before the next, so a nonce cannot collide with itself.
 async function send(wallet, { address, abi, functionName, args, value }) {
@@ -134,7 +137,7 @@ note('writer posts offer', rOffer, `id ${id}, strike ${STRIKE_RATE} (ECB ${STRIK
 // 3. The importer takes it. From here their cost in dollars is fixed whatever EUR/USD does.
 await send(T, { address: rec.usdc, abi: USDC, functionName: 'approve', args: [rec.forward, COLLATERAL] })
 const rTake = await send(T, { address: rec.forward, abi: FWD, functionName: 'take', args: [id, COLLATERAL] })
-note('importer locks the rate', rTake, `${usd(COLLATERAL)} margin, EUR ${formatUnits(NOTIONAL, 6)} notional`)
+note('importer locks the rate', rTake, `${eur(NOTIONAL)} notional, ${usd(COLLATERAL)} margin`)
 
 // 4. Wait for maturity. Not a simulated clock — the chain's own timestamp has to pass it.
 const until = Number(maturity) + 5
@@ -169,7 +172,7 @@ const lockedCost = (strike * NOTIONAL) / 10n ** 18n
 
 console.log(`\nresult`)
 console.log(`  strike ${STRIKE_RATE} -> settled at ${SETTLE_RATE}   (${(((Number(SETTLE_RATE) / Number(STRIKE_RATE)) - 1) * 10_000).toFixed(1)} bp)`)
-console.log(`  EUR ${formatUnits(NOTIONAL, 6)} would have cost ${usd(spotCost)} at settlement spot`)
+console.log(`  ${eur(NOTIONAL)} would have cost ${usd(spotCost)} at settlement spot`)
 console.log(`  the lock fixed it at                 ${usd(lockedCost)}`)
 console.log(`  forward paid the importer            ${usd(s.toTaker - COLLATERAL)}`)
 console.log(`  capped:  ${s.capped}`)
@@ -180,7 +183,7 @@ const out = {
   network: target, chainId: chain.id, forward: rec.forward, oracle: rec.oracle,
   explorer: chain.blockExplorers?.default.url ?? null,
   pair: rec.pair, id: String(id),
-  notional: String(NOTIONAL), notionalLabel: `EUR ${Number(formatUnits(NOTIONAL, 6)).toLocaleString('en-US')}`,
+  notional: String(NOTIONAL), notionalLabel: eur(NOTIONAL),
   strike: STRIKE_RATE, strikeDate: STRIKE_DATE,
   settledAt: SETTLE_RATE, settleDate: SETTLE_DATE,
   moveBps: Number((((Number(SETTLE_RATE) / Number(STRIKE_RATE)) - 1) * 10_000).toFixed(1)),

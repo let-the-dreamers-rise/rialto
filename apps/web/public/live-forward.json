@@ -28,19 +28,19 @@
       "label": "fund counterparty",
       "tx": "0x723661d873fefa2568256ad5566d40c1ce9fc862321a070cf2ff14edd408a94e",
       "gas": "21000",
-      "detail": "6.5 USDC for collateral and gas"
+      "detail": "6.50 USDC for collateral and gas"
     },
     {
       "label": "writer posts offer",
       "tx": "0x635b6721bff0c235354f17cf09d215c6716bd47afd03ef7c85925f7e8cb2e4f3",
       "gas": "219949",
-      "detail": "id 0, strike 1.1622 (ECB 2026-09-04), 5 USDC margin"
+      "detail": "id 0, strike 1.1622 (ECB 2026-09-04), 5.00 USDC margin"
     },
     {
       "label": "importer locks the rate",
       "tx": "0x55c358481f46fb298726c5560840f00df4a7a3b858714816f1cc375d0826cbfb",
       "gas": "106366",
-      "detail": "5 USDC margin, EUR 1000 notional"
+      "detail": "EUR 1,000 notional, 5.00 USDC margin"
     },
     {
       "label": "settlement rate posted",
@@ -52,7 +52,7 @@
       "label": "settled against oracle",
       "tx": "0x15e2659a25163842ea43763f3628a5b33f2a60da7fde508dd1cb0e928e459742",
       "gas": "121285",
-      "detail": "taker P&L 3 USDC"
+      "detail": "taker P&L 3.00 USDC"
     }
   ],
   "ranAt": "2026-09-10T14:04:07.243Z",
