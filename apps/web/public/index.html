@@ -3,139 +3,184 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rialto — stablecoin FX on Arc, priced at the rate that exists</title>
-<meta name="description" content="Arc ships with no price oracle, so every FX pool on it is centred at 1.00. Measured over a year of ECB data, that costs a third of the liquidity.">
+<title>Rialto — the price oracle Arc did not have</title>
+<meta name="description" content="Live on Arc testnet: a pull-based FX oracle and a rate-anchored stableswap. Read the feed yourself.">
 <style>
-  :root {
+  :root{
     color-scheme: light dark;
-    --bg: #fcfcfb; --panel: #ffffff; --line: #e6e5e0;
-    --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #8a8880;
-    --a: #eb6834;   /* 1:1 stableswap */
-    --b: #2a78d6;   /* rate-anchored */
-    --grid: #eceae4;
-    --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    --bg:#fcfcfb; --panel:#ffffff; --sunk:#f6f5f2; --line:#e6e5e0;
+    --ink:#0b0b0b; --ink-2:#52514e; --ink-3:#8a8880;
+    --a:#eb6834; --b:#2a78d6; --ok:#1baf7a; --grid:#eceae4;
+    --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg:#151513; --panel:#1a1a19; --line:#2e2d29;
-      --ink:#ffffff; --ink-2:#c3c2b7; --ink-3:#8d8b82;
-      --a:#d95926; --b:#3987e5; --grid:#282723;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg:#151513; --panel:#1a1a19; --line:#2e2d29;
-    --ink:#ffffff; --ink-2:#c3c2b7; --ink-3:#8d8b82;
-    --a:#d95926; --b:#3987e5; --grid:#282723;
-  }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink);
-         font:15.5px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
-  .wrap { max-width: 960px; margin:0 auto; padding: 56px 24px 96px; }
-  h1 { font-size:clamp(28px,4.5vw,40px); line-height:1.12; letter-spacing:-0.025em; margin:0 0 14px; }
-  h2 { font-size:20px; letter-spacing:-0.015em; margin:52px 0 8px; }
-  p { margin:0 0 14px; max-width:68ch; color:var(--ink-2); }
-  p.lede { font-size:18px; color:var(--ink); max-width:64ch; }
-  strong { color:var(--ink); font-weight:650; }
-  .kicker { font:600 12px/1 var(--mono); letter-spacing:.14em; text-transform:uppercase;
-            color:var(--ink-3); margin-bottom:16px; }
-  .hero { border-bottom:1px solid var(--line); padding-bottom:32px; margin-bottom:8px; }
-  .figure { background:var(--panel); border:1px solid var(--line); border-radius:12px;
-            padding:22px 22px 14px; margin:22px 0; }
-  .figure h3 { margin:0 0 2px; font-size:16px; letter-spacing:-0.01em; }
-  .figure .sub { color:var(--ink-3); font-size:13px; margin:0 0 18px; }
-  .legend { display:flex; gap:18px; align-items:center; font-size:13px; color:var(--ink-2); margin:0 0 14px; }
-  .swatch { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:baseline; }
-  .note { color:var(--ink-3); font-size:13px; margin-top:14px; }
-  table { border-collapse:collapse; width:100%; font-size:14px; }
-  th, td { text-align:right; padding:7px 10px; border-bottom:1px solid var(--line); }
-  th:first-child, td:first-child { text-align:left; font-family:var(--mono); font-size:13px; }
-  th { color:var(--ink-3); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.06em; }
-  td.num { font-variant-numeric:tabular-nums; font-family:var(--mono); font-size:13px; }
-  .neg { color:var(--a); } .pos { color:var(--b); }
-  .live { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:1px;
-          background:var(--line); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
-  .cell { background:var(--panel); padding:16px 18px; }
-  .cell .k { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-3); }
-  .cell .v { font-size:23px; font-weight:640; font-variant-numeric:tabular-nums; margin-top:3px; letter-spacing:-0.02em; }
-  .cell .s { font-size:12.5px; color:var(--ink-3); font-family:var(--mono); }
-  .pill { display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:600;
-          background:color-mix(in srgb, var(--ink-3) 15%, transparent); color:var(--ink-2); }
-  code { font-family:var(--mono); font-size:13px; }
-  footer { margin-top:64px; padding-top:24px; border-top:1px solid var(--line); color:var(--ink-3); font-size:13.5px; }
-  a { color:var(--b); }
-  .scroll { overflow-x:auto; }
-  svg text { font-family:inherit; }
-  .tip { position:fixed; pointer-events:none; background:var(--panel); border:1px solid var(--line);
-         border-radius:8px; padding:8px 11px; font-size:13px; box-shadow:0 6px 20px rgba(0,0,0,.13);
-         opacity:0; transition:opacity .1s; z-index:9; }
-  .tip .t { font-family:var(--mono); font-size:12px; color:var(--ink-3); }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#141412; --panel:#1c1c1a; --sunk:#171715; --line:#2e2d29;
+    --ink:#fff; --ink-2:#c3c2b7; --ink-3:#8d8b82;
+    --a:#d95926; --b:#3987e5; --ok:#199e70; --grid:#282723;}}
+  :root[data-theme="dark"]{--bg:#141412;--panel:#1c1c1a;--sunk:#171715;--line:#2e2d29;
+    --ink:#fff;--ink-2:#c3c2b7;--ink-3:#8d8b82;--a:#d95926;--b:#3987e5;--ok:#199e70;--grid:#282723;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15.5px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:44px 24px 90px}
+  h1{font-size:clamp(26px,4vw,38px);line-height:1.12;letter-spacing:-.025em;margin:0 0 12px}
+  h2{font-size:19px;letter-spacing:-.015em;margin:48px 0 10px}
+  p{margin:0 0 13px;max-width:70ch;color:var(--ink-2)}
+  .lede{font-size:17.5px;color:var(--ink);max-width:62ch}
+  strong{color:var(--ink);font-weight:650}
+  .kicker{font:600 11.5px/1 var(--mono);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin-bottom:14px}
+  .live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);
+            margin-right:7px;vertical-align:middle;animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* ---- the instrument ---- */
+  .rig{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:26px 0}
+  .rig-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+            padding:14px 20px;border-bottom:1px solid var(--line);background:var(--sunk)}
+  .rig-head .t{font:600 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+  .rig-head .r{font:12px/1 var(--mono);color:var(--ink-3)}
+  .rig-body{padding:22px 20px}
+  .quote{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .quote .big{font-size:clamp(40px,7vw,58px);font-weight:660;letter-spacing:-.03em;
+              font-variant-numeric:tabular-nums;line-height:1}
+  .quote .pair{font:13px/1 var(--mono);color:var(--ink-3)}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--ink-3)}
+  .meta b{color:var(--ink-2);font-weight:600;font-variant-numeric:tabular-nums}
+
+  .try{margin-top:22px;padding-top:20px;border-top:1px dashed var(--line)}
+  .try h4{margin:0 0 4px;font-size:14.5px}
+  .try p{font-size:13.5px;margin-bottom:12px}
+  .bounds{display:flex;gap:8px;flex-wrap:wrap}
+  button{font:inherit;font-size:13.5px;padding:7px 13px;border-radius:8px;cursor:pointer;
+         border:1px solid var(--line);background:var(--panel);color:var(--ink);transition:.12s}
+  button:hover{border-color:var(--ink-3)}
+  button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .out{margin-top:14px;background:var(--sunk);border:1px solid var(--line);border-radius:10px;
+       padding:13px 15px;font-family:var(--mono);font-size:12.5px;line-height:1.65;white-space:pre-wrap;
+       word-break:break-word;color:var(--ink-2);min-height:74px}
+  .out .good{color:var(--ok)} .out .bad{color:var(--a)} .out .dim{color:var(--ink-3)}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px}
+  .card .n{font-weight:650;font-size:14.5px;margin-bottom:2px}
+  .card .ad{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);word-break:break-all}
+  .card .ad a{color:var(--b);text-decoration:none} .card .ad a:hover{text-decoration:underline}
+  .badge{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+         padding:2px 7px;border-radius:5px;margin-top:9px;
+         background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+  .card .p{font-size:12.5px;color:var(--ink-3);margin-top:9px;font-family:var(--mono)}
+
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{text-align:right;padding:7px 10px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left;font-family:var(--mono);font-size:13px}
+  th{color:var(--ink-3);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em}
+  td.num{font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:13px}
+  .neg{color:var(--a)} .pos{color:var(--b)}
+  .figure{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 20px 12px;margin:20px 0}
+  .figure h3{margin:0 0 2px;font-size:15.5px} .figure .sub{color:var(--ink-3);font-size:12.5px;margin:0 0 16px}
+  .legend{display:flex;gap:18px;font-size:12.5px;color:var(--ink-2);margin-bottom:12px}
+  .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+  .note{color:var(--ink-3);font-size:12.5px;margin-top:12px}
+  .scroll{overflow-x:auto}
+  footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
+  a{color:var(--b)}
+  code{font-family:var(--mono);font-size:12.5px}
+  .tip{position:fixed;pointer-events:none;background:var(--panel);border:1px solid var(--line);
+       border-radius:8px;padding:8px 11px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.14);opacity:0;transition:.1s;z-index:9}
+  .tip .t{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <div class="hero">
-    <div class="kicker">Rialto · stablecoin FX on Arc</div>
-    <h1>Arc ships with no price oracle.<br>So every FX pool on it is centred at&nbsp;1.00.</h1>
-    <p class="lede">Circle has announced partner stablecoins in BRL, MXN, PHP, ZAR, JPY, KRW, CAD
-      and AUD. Those trade at roughly 5, 17, 57, 16, 150, 1400, 1.4 and 1.5 to the dollar —
-      nowhere near 1.00. We measured what that costs, over a year of real ECB observations,
-      on a real EVM.</p>
+  <div class="kicker">Rialto · live on Arc testnet</div>
+  <h1>Arc had no price oracle.<br>Here is one, running.</h1>
+  <p class="lede">Not a diagram of one. The number below is read from a contract on Arc every
+    few seconds, and you can make the call yourself further down.</p>
+
+  <!-- ── the instrument ── -->
+  <div class="rig">
+    <div class="rig-head">
+      <span class="t"><span class="live-dot"></span>RialtoOracle · EUR/USD</span>
+      <span class="r" id="src">reading…</span>
+    </div>
+    <div class="rig-body">
+      <div class="quote">
+        <span class="big" id="rate">—</span>
+        <span class="pair">USD per EUR</span>
+      </div>
+      <div class="meta">
+        <span>observed <b id="age">—</b> ago</span>
+        <span>block <b id="blk">—</b></span>
+        <span>gas <b id="gas">—</b></span>
+        <span>quorum <b id="quorum">—</b></span>
+        <span>update cost <b>0.0017 USDC</b></span>
+      </div>
+
+      <div class="try">
+        <h4>Make the call yourself</h4>
+        <p><code>getRate(pair, maxAge)</code> reverts when the feed is older than the bound
+          <em>you</em> name — a pool settling a trade wants seconds, a dashboard can accept
+          minutes. Pick a bound and watch it succeed or revert on-chain.</p>
+        <div class="bounds" id="bounds"></div>
+        <div class="out" id="out"><span class="dim">choose a bound above…</span></div>
+      </div>
+    </div>
   </div>
+
+  <h2>Deployed and source-verified</h2>
+  <div class="cards" id="cards"></div>
+  <p class="note">Verified means the source at those addresses can be read, not just the
+    bytecode. <code>npm run verify</code> reproduces it from the same standard-json-input the
+    contracts were compiled from.</p>
+
+  <h2>Why it had to exist first</h2>
+  <p>Circle has announced partner stablecoins in BRL, MXN, PHP, ZAR, JPY, KRW, CAD and AUD.
+    Those trade at roughly 5, 17, 57, 16, 150, 1400, 1.4 and 1.5 to the dollar. The only venue
+    design deployed on Arc is a Curve-style stableswap, whose invariant is flat — cheap —
+    around <em>equal balances</em>, meaning a price of <strong>1.00</strong>. Nothing there is
+    near 1.00, and no pool can be centred on a rate the chain cannot read.</p>
 
   <div class="figure">
     <h3>A year of LP returns, by corridor</h3>
     <p class="sub">Two pools identical in every respect except where their liquidity sits —
-      same invariant, amplification, fee and trades. 259 ECB observations, sampled weekly.</p>
+      same invariant, amplification, fee and trades. 259 real ECB observations, on a real EVM.</p>
     <div class="legend">
-      <span><span class="swatch" style="background:var(--a)"></span>1:1 stableswap</span>
-      <span><span class="swatch" style="background:var(--b)"></span>Rate-anchored</span>
+      <span><span class="sw" style="background:var(--a)"></span>1:1 stableswap</span>
+      <span><span class="sw" style="background:var(--b)"></span>Rate-anchored</span>
     </div>
-    <div class="scroll"><svg id="dumbbell" width="100%" height="290" role="img"
+    <div class="scroll"><svg id="db" width="100%" height="280" role="img"
       aria-label="LP return by corridor: the 1:1 stableswap loses 33 to 39 percent on emerging-market corridors while the rate-anchored pool is near flat."></svg></div>
-    <p class="note">Sampled weekly rather than daily, which gives both pools a fifth of the retail
-      flow and so a fifth of the fee income. That makes the rate-anchored column look
-      <em>worse</em> than the daily EUR/USD run, where it returns +2.32%. The comparison between
-      the two is unaffected — both see identical trades.</p>
+    <div class="scroll" style="margin-top:18px">
+      <table id="tbl"><thead><tr><th>Corridor</th><th>FX range</th><th>1:1 stableswap</th>
+        <th>Rate-anchored</th><th>Lost to arbitrage (1:1)</th></tr></thead><tbody></tbody></table>
+    </div>
+    <p class="note">Sampled weekly, which gives both pools a fifth of the retail flow and so a
+      fifth of the fee income — that makes the rate-anchored column look <em>worse</em> than
+      the daily EUR/USD run, where it returns +2.32%. Both pools see identical trades, so the
+      comparison between them is unaffected.</p>
   </div>
 
-  <h2>The same numbers, as a table</h2>
-  <div class="scroll">
-    <table id="tbl">
-      <thead><tr><th>Corridor</th><th>FX range</th><th>1:1 stableswap</th><th>Rate-anchored</th><th>Lost to arbitrage (1:1)</th></tr></thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  <p class="note">A third of the liquidity provider's capital, per year. On EUR/USD the incumbent
-    design is merely wrong; on the corridors stablecoin payments are actually for, it is a shredder.</p>
+  <p>This is not a criticism of anyone's pool. ViFi Labs and Lunex are both building FX on Arc
+    testnet under the same constraint — Circle's own prediction-market sample bootstraps UMA
+    because there is nothing native to read. The oracle above is permissionless. It makes our
+    pools work; it would make theirs work too.</p>
 
-  <h2>This is not a criticism of anyone's pool</h2>
-  <p>ViFi Labs and Lunex are both live on Arc testnet building FX, and both work under the same
-    constraint we did: <strong>there is no price feed on Arc.</strong> Circle's own
-    prediction-market sample has to bootstrap UMA for the same reason. You cannot centre a pool
-    on a rate the chain cannot read, so every design has to approximate one — and the table above
-    is what the approximation costs, whoever deployed the pool.</p>
-  <p>So we built the oracle first, and it is permissionless to read. It makes our pools work.
-    It would make theirs work too.</p>
-
-  <h2>Live on Arc</h2>
-  <div class="live" id="live">
-    <div class="cell"><div class="k">Status</div><div class="v" id="st">checking…</div><div class="s" id="sts">rpc.testnet.arc.io</div></div>
-  </div>
-
-  <h2>What is deployed</h2>
-  <p><code>RialtoOracle</code> — pull-based signed FX feed, M-of-N publishers, deviation ceiling.
-     <code>RialtoPool</code> — stableswap on rate-scaled balances.
-     <code>RialtoSettlement</code> — exact-output invoice settlement with the reference on-chain.
-     <code>RialtoRouter</code> — multi-hop, so N corridors give N(N−1)/2 pairs.
-     <code>RialtoForward</code> — collateralised rate locks, because an invoice has terms.</p>
-  <p><span class="pill">71 tests</span> &nbsp;<span class="pill">3 reproducible measurements</span>
-     &nbsp;<span class="pill">adversarial review published</span></p>
+  <h2>What else is built</h2>
+  <p><code>RialtoSettlement</code> — exact-output invoice settlement, because an invoice is
+    denominated in what the payee receives and carries a reference that has to reconcile.
+    <code>RialtoRouter</code> — multi-hop, so N corridors give N(N−1)/2 pairs instead of N²
+    pools; a Brazilian importer settles a peso invoice with no BRL/PHP pool in existence.
+    <code>RialtoForward</code> — collateralised rate locks, because an invoice has terms and a
+    thirty-day move dwarfs any fee.</p>
+  <p class="note">71 tests · 3 reproducible measurements · an adversarial review that found and
+    fixed an unbounded oracle failure mode, and states what remains exploitable.</p>
 
   <footer>
-    <p>Every figure is reproducible: <code>npm run corridors</code>, <code>npm run simulate</code>.
-       Data: European Central Bank, series <code>EXR.D.&lt;CUR&gt;.EUR.SP00.A</code>.
-       The review that found and fixed an unbounded oracle failure mode is in <code>REVIEW.md</code>.</p>
+    <p>Source: <a href="https://github.com/let-the-dreamers-rise/rialto">github.com/let-the-dreamers-rise/rialto</a> ·
+       every figure reproducible with <code>npm run corridors</code> ·
+       data: European Central Bank <code>EXR.D.&lt;CUR&gt;.EUR.SP00.A</code></p>
+    <p id="pool-note"></p>
   </footer>
 </div>
 <div class="tip" id="tip"></div>
@@ -144,64 +189,110 @@
 const $ = (s) => document.querySelector(s)
 const tip = $('#tip')
 const fmt = (n) => n.toLocaleString('en-US')
+const ago = (s) => s < 60 ? `${s}s` : s < 3600 ? `${Math.floor(s/60)}m ${s%60}s`
+                 : s < 86400 ? `${Math.floor(s/3600)}h ${Math.floor(s%3600/60)}m` : `${Math.floor(s/86400)}d`
 
+/* ── live oracle ── */
+let state = null
+async function refresh() {
+  try {
+    const s = await fetch('/api/state').then(r => r.json())
+    if (s.error) throw new Error(s.detail ?? s.error)
+    state = s
+    $('#rate').textContent = (Number(s.oracle.rate) / 1e18).toFixed(4)
+    $('#age').textContent = ago(s.oracle.ageSeconds)
+    $('#blk').textContent = fmt(Number(s.block.number))
+    $('#gas').textContent = s.gasPriceGwei.toFixed(1) + ' gwei'
+    $('#quorum').textContent = s.oracle.quorum + '-of-N'
+    $('#src').textContent = `read at block ${fmt(Number(s.block.number))}`
+    renderCards(s)
+    $('#pool-note').textContent =
+      `Pool ${s.addresses.pool} is deployed and verified with amplification ${s.pool.amp} and a `
+      + `${Number(s.pool.feePpm)/100}bp fee; reserves are ${s.pool.reserve0}/${s.pool.reserve1} — `
+      + `it is awaiting testnet EURC before it can quote.`
+  } catch (e) {
+    $('#src').textContent = 'chain unreachable'
+  }
+}
+
+function renderCards(s) {
+  const scan = 'https://testnet.arcscan.app/address/'
+  const items = [
+    ['RialtoOracle', s.addresses.oracle, `quorum ${s.oracle.quorum} · ${Number(s.oracle.devFreshBps)/100}% fresh → ${Number(s.oracle.devCeilingBps)/100}% ceiling`],
+    ['OracleRateSource', s.addresses.rateSource, 'binds the pool to EUR/USD'],
+    ['RialtoPool', s.addresses.pool, `amp ${s.pool.amp} · fee ${Number(s.pool.feePpm)/100}bp · protocol ${Number(s.pool.protocolSharePpm)/10000}%`],
+  ]
+  $('#cards').innerHTML = items.map(([n, a, p]) => `
+    <div class="card">
+      <div class="n">${n}</div>
+      <div class="ad"><a href="${scan}${a}" target="_blank" rel="noopener">${a}</a></div>
+      <div class="badge">verified on arcscan</div>
+      <div class="p">${p}</div>
+    </div>`).join('')
+}
+
+/* ── the interactive call ── */
+const BOUNDS = [[60,'60 seconds'],[900,'15 minutes'],[3600,'1 hour'],[86400,'1 day']]
+$('#bounds').innerHTML = BOUNDS.map(([v,l]) =>
+  `<button data-v="${v}" aria-pressed="false">${l}</button>`).join('')
+
+async function callGetRate(maxAge, btn) {
+  document.querySelectorAll('#bounds button').forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'))
+  $('#out').innerHTML = `<span class="dim">calling the contract…</span>`
+  try {
+    const r = await fetch(`/api/getRate?maxAge=${maxAge}`).then(x => x.json())
+    $('#out').innerHTML = r.ok
+      ? `<span class="dim">${r.call}</span>\n<span class="good">→ ${r.rateDecimal.toFixed(6)} USD per EUR</span>`
+        + `\n<span class="dim">  raw ${r.rate}  observedAt ${r.observedAt}</span>`
+      : `<span class="dim">${r.call}</span>\n<span class="bad">→ reverted: ${r.revert}</span>`
+        + `\n<span class="dim">  ${r.detail}</span>`
+        + `\n<span class="dim">  this is the contract working: you asked for a tighter bound than the feed can honour.</span>`
+  } catch {
+    $('#out').innerHTML = `<span class="bad">→ could not reach the chain</span>`
+  }
+}
+$('#bounds').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (b) callGetRate(Number(b.dataset.v), b)
+})
+
+/* ── the measurement ── */
 const rows = await fetch('corridors.json').then(r => r.json()).catch(() => [])
-
-/* ---------- table (also the accessible view of the chart) ---------- */
 $('#tbl tbody').innerHTML = rows.map(r => `
-  <tr>
-    <td>${r.pair}</td>
-    <td class="num">${r.rangePct.toFixed(1)}%</td>
-    <td class="num neg">${r.a.toFixed(2)}%</td>
-    <td class="num ${r.b >= 0 ? 'pos' : ''}">${r.b >= 0 ? '+' : ''}${r.b.toFixed(2)}%</td>
-    <td class="num">${fmt(r.arbA)}</td>
-  </tr>`).join('')
+  <tr><td>${r.pair}</td><td class="num">${r.rangePct.toFixed(1)}%</td>
+  <td class="num neg">${r.a.toFixed(2)}%</td>
+  <td class="num ${r.b>=0?'pos':''}">${r.b>=0?'+':''}${r.b.toFixed(2)}%</td>
+  <td class="num">${fmt(r.arbA)}</td></tr>`).join('')
 
-/* ---------- dumbbell: before -> after per corridor ---------- */
 function draw() {
-  const svg = $('#dumbbell')
-  const W = svg.clientWidth || 880, rowH = 34, padT = 26, padB = 34, padL = 78, padR = 20
+  const svg = $('#db'); if (!rows.length) return
+  const W = svg.clientWidth || 880, rowH = 33, padT = 24, padB = 32, padL = 76, padR = 18
   const H = padT + rows.length * rowH + padB
-  svg.setAttribute('height', H)
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
-
-  const lo = Math.min(-42, ...rows.map(r => r.a)) , hi = 6
+  svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+  const lo = Math.min(-42, ...rows.map(r => r.a)), hi = 6
   const x = (v) => padL + ((v - lo) / (hi - lo)) * (W - padL - padR)
   const cs = getComputedStyle(document.body)
   const cA = cs.getPropertyValue('--a').trim(), cB = cs.getPropertyValue('--b').trim()
-  const grid = cs.getPropertyValue('--grid').trim(), ink3 = cs.getPropertyValue('--ink-3').trim()
-  const ink2 = cs.getPropertyValue('--ink-2').trim(), surface = cs.getPropertyValue('--panel').trim()
-
+  const grid = cs.getPropertyValue('--grid').trim(), i3 = cs.getPropertyValue('--ink-3').trim()
+  const i2 = cs.getPropertyValue('--ink-2').trim(), surf = cs.getPropertyValue('--panel').trim()
   let s = ''
   for (let v = -40; v <= 0; v += 10) {
-    s += `<line x1="${x(v)}" y1="${padT - 8}" x2="${x(v)}" y2="${H - padB + 4}" stroke="${grid}" stroke-width="1"/>`
-    s += `<text x="${x(v)}" y="${H - padB + 20}" fill="${ink3}" font-size="11.5" text-anchor="middle">${v}%</text>`
+    s += `<line x1="${x(v)}" y1="${padT-8}" x2="${x(v)}" y2="${H-padB+4}" stroke="${grid}" stroke-width="1"/>`
+      + `<text x="${x(v)}" y="${H-padB+19}" fill="${i3}" font-size="11" text-anchor="middle">${v}%</text>`
   }
-  s += `<line x1="${x(0)}" y1="${padT - 8}" x2="${x(0)}" y2="${H - padB + 4}" stroke="${ink3}" stroke-width="1"/>`
-
+  s += `<line x1="${x(0)}" y1="${padT-8}" x2="${x(0)}" y2="${H-padB+4}" stroke="${i3}" stroke-width="1"/>`
   rows.forEach((r, i) => {
     const y = padT + i * rowH + rowH / 2
-    s += `<text x="${padL - 12}" y="${y + 4}" fill="${ink2}" font-size="12.5" text-anchor="end"
-           font-family="ui-monospace,Menlo,monospace">${r.pair}</text>`
-    // connector: the gap is the story
-    s += `<line x1="${x(r.a)}" y1="${y}" x2="${x(r.b)}" y2="${y}" stroke="${ink3}" stroke-width="2" opacity=".38" stroke-linecap="round"/>`
-    // 2px surface ring so overlapping marks stay separable
-    s += `<circle cx="${x(r.a)}" cy="${y}" r="6.5" fill="${cA}" stroke="${surface}" stroke-width="2"
-           data-p="${r.pair}" data-k="1:1 stableswap" data-v="${r.a.toFixed(2)}%" data-arb="${fmt(r.arbA)}"/>`
-    s += `<circle cx="${x(r.b)}" cy="${y}" r="6.5" fill="${cB}" stroke="${surface}" stroke-width="2"
-           data-p="${r.pair}" data-k="Rate-anchored" data-v="${(r.b >= 0 ? '+' : '') + r.b.toFixed(2)}%" data-arb="${fmt(r.arbB)}"/>`
-    if (i === 0) {
-      s += `<text x="${x(r.a)}" y="${y - 13}" fill="${cA}" font-size="11.5" text-anchor="middle">1:1</text>`
-      s += `<text x="${x(r.b)}" y="${y - 13}" fill="${cB}" font-size="11.5" text-anchor="middle">anchored</text>`
-    }
+    s += `<text x="${padL-11}" y="${y+4}" fill="${i2}" font-size="12" text-anchor="end" font-family="ui-monospace,Menlo,monospace">${r.pair}</text>`
+      + `<line x1="${x(r.a)}" y1="${y}" x2="${x(r.b)}" y2="${y}" stroke="${i3}" stroke-width="2" opacity=".38" stroke-linecap="round"/>`
+      + `<circle cx="${x(r.a)}" cy="${y}" r="6.5" fill="${cA}" stroke="${surf}" stroke-width="2" data-p="${r.pair}" data-k="1:1 stableswap" data-v="${r.a.toFixed(2)}%" data-arb="${fmt(r.arbA)}"/>`
+      + `<circle cx="${x(r.b)}" cy="${y}" r="6.5" fill="${cB}" stroke="${surf}" stroke-width="2" data-p="${r.pair}" data-k="Rate-anchored" data-v="${(r.b>=0?'+':'')+r.b.toFixed(2)}%" data-arb="${fmt(r.arbB)}"/>`
+    if (i === 0) s += `<text x="${x(r.a)}" y="${y-13}" fill="${cA}" font-size="11" text-anchor="middle">1:1</text>`
+                    + `<text x="${x(r.b)}" y="${y-13}" fill="${cB}" font-size="11" text-anchor="middle">anchored</text>`
   })
   svg.innerHTML = s
-
-  svg.querySelectorAll('circle').forEach((c) => {
-    c.addEventListener('pointerenter', (e) => {
-      tip.innerHTML = `<div class="t">${c.dataset.p} · ${c.dataset.k}</div>
-        <div><strong>${c.dataset.v}</strong> LP return</div>
-        <div class="t">${c.dataset.arb} USDC to arbitrage</div>`
+  svg.querySelectorAll('circle').forEach(c => {
+    c.addEventListener('pointerenter', e => {
+      tip.innerHTML = `<div class="t">${c.dataset.p} · ${c.dataset.k}</div><div><strong>${c.dataset.v}</strong> LP return</div><div class="t">${c.dataset.arb} USDC to arbitrage</div>`
       tip.style.opacity = 1
       tip.style.left = Math.min(e.clientX + 14, innerWidth - 210) + 'px'
       tip.style.top = (e.clientY - 10) + 'px'
@@ -209,35 +300,10 @@ function draw() {
     c.addEventListener('pointerleave', () => { tip.style.opacity = 0 })
   })
 }
-if (rows.length) { draw(); addEventListener('resize', draw) }
+draw(); addEventListener('resize', draw)
 
-/* ---------- live Arc testnet ---------- */
-// Via a same-origin proxy: a public RPC owes us no CORS headers, and a demo that reads
-// "unreachable" in someone else's browser is worse than no demo.
-const call = (method, params = []) =>
-  fetch(`/api/arc?method=${method}&params=${encodeURIComponent(JSON.stringify(params))}`).then(r => r.json())
-
-try {
-  const [id, blk, gas] = await Promise.all([call('eth_chainId'), call('eth_blockNumber'), call('eth_gasPrice')])
-  const chain = parseInt(id.result, 16)
-  const cells = [
-    ['Chain', chain === 5042002 ? 'Arc testnet' : `chain ${chain}`, `id ${chain}`],
-    ['Head block', parseInt(blk.result, 16).toLocaleString(), 'live'],
-    ['Gas price', (parseInt(gas.result, 16) / 1e9).toFixed(1) + ' gwei', 'paid in USDC'],
-  ]
-  const dep = await fetch('deployment.json').then(r => r.ok ? r.json() : null).catch(() => null)
-  if (dep?.pool) {
-    cells.push(['Pool', dep.pool.slice(0, 10) + '…', 'RialtoPool'])
-    cells.push(['Oracle', dep.oracle.slice(0, 10) + '…', 'RialtoOracle'])
-  } else {
-    cells.push(['Contracts', 'awaiting gas', 'deployer unfunded'])
-  }
-  $('#live').innerHTML = cells.map(([k, v, s]) =>
-    `<div class="cell"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join('')
-} catch {
-  $('#st').textContent = 'unreachable'
-  $('#sts').textContent = 'could not read rpc.testnet.arc.io'
-}
+await refresh()
+setInterval(refresh, 12000)
 </script>
 </body>
 </html>

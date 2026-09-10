@@ -1,5 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
-  "rewrites": [{ "source": "/api/arc", "destination": "/api/arc.mjs" }]
+  "rewrites": [
+    { "source": "/api/state", "destination": "/api/state.mjs" },
+    { "source": "/api/getRate", "destination": "/api/getRate.mjs" },
+    { "source": "/api/arc", "destination": "/api/arc.mjs" }
+  ]
 }
