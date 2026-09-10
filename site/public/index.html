@@ -85,6 +85,17 @@
   footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
   a{color:var(--b)}
   code{font-family:var(--mono);font-size:12.5px}
+  .who{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:26px 0 8px}
+  .who>div{font-size:13.5px;color:var(--ink-2);line-height:1.55}
+  .wk{display:block;font:600 11px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;
+      color:var(--ink-3);margin-bottom:5px}
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:16px 0}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;
+        font-size:13px;color:var(--ink-3);line-height:1.5}
+  .step b{display:block;color:var(--ink);font-size:14px;font-weight:640;margin:6px 0 3px}
+  .sn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;
+      border-radius:50%;background:var(--sunk);border:1px solid var(--line);
+      font:600 11px/1 var(--mono);color:var(--ink-3)}
   .tip{position:fixed;pointer-events:none;background:var(--panel);border:1px solid var(--line);
        border-radius:8px;padding:8px 11px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.14);opacity:0;transition:.1s;z-index:9}
   .tip .t{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
@@ -93,10 +104,45 @@
 <body>
 <div class="wrap">
 
-  <div class="kicker">Rialto · live on Arc testnet</div>
-  <h1>Arc had no price oracle.<br>Here is one, running.</h1>
-  <p class="lede">Not a diagram of one. The number below is read from a contract on Arc every
-    few seconds, and you can make the call yourself further down.</p>
+  <div class="kicker">Rialto</div>
+  <h1>Pay a foreign invoice<br>in one transaction.</h1>
+  <p class="lede">A supplier bills you €5,000. You hold dollars. Today that costs
+    <strong>40–60bp</strong> through a payments provider or <strong>200–300bp</strong> through a
+    bank, takes one to three days, and arrives with nothing linking it back to the invoice.</p>
+  <p class="lede" style="margin-top:10px">Rialto settles it onchain in one transaction, at
+    <strong>25bp</strong>, at the FX rate that actually exists — and the payee receives exactly
+    €5,000, not "about" €5,000.</p>
+
+  <div class="who">
+    <div><span class="wk">Who it is for</span>Importers, exporters and agencies paying
+      cross-border invoices — the businesses too small for a bank's FX desk.</div>
+    <div><span class="wk">What they get</span>Exact settlement in the currency they were
+      billed in, sub-second, with the invoice reference and the rate they were charged
+      recorded onchain.</div>
+    <div><span class="wk">Where it runs</span>Arc, Circle's stablecoin chain, where USDC is
+      the gas token — so the price, the fee and the settlement are one asset.</div>
+  </div>
+
+  <h2>How one payment works</h2>
+  <div class="flow">
+    <div class="step"><span class="sn">1</span><b>The invoice arrives</b>
+      €5,000, ref INV-2026-114, due in 30 days.</div>
+    <div class="step"><span class="sn">2</span><b>You send one transaction</b>
+      Bounded at the most you will part with, expiring when you say.</div>
+    <div class="step"><span class="sn">3</span><b>The rate is read on-chain</b>
+      Verified from a publisher quorum, refused if staler than your bound.</div>
+    <div class="step"><span class="sn">4</span><b>The payee is paid exactly</b>
+      €5,000 lands, and the reference and effective rate are on-chain for reconciliation.</div>
+  </div>
+  <p class="note" style="margin-bottom:34px">Every currency pair works this way, including ones
+    with no direct pool: routing through USDC means N corridors give N(N−1)/2 pairs, so a
+    Brazilian importer pays a Philippine peso invoice without a BRL/PHP pool existing.</p>
+
+  <h2>The piece that makes it possible</h2>
+  <p>None of the above is possible without knowing the real FX rate on-chain, and
+    <strong>Arc ships with no price oracle</strong> — Circle's own prediction-market sample
+    bootstraps UMA because there is nothing native to read. So we built one first. It is live,
+    it is permissionless to read, and the number below comes from it right now.</p>
 
   <!-- ── the instrument ── -->
   <div class="rig">
@@ -134,7 +180,7 @@
     bytecode. <code>npm run verify</code> reproduces it from the same standard-json-input the
     contracts were compiled from.</p>
 
-  <h2>Why it had to exist first</h2>
+  <h2>Why nobody had built this</h2>
   <p>Circle has announced partner stablecoins in BRL, MXN, PHP, ZAR, JPY, KRW, CAD and AUD.
     Those trade at roughly 5, 17, 57, 16, 150, 1400, 1.4 and 1.5 to the dollar. The only venue
     design deployed on Arc is a Curve-style stableswap, whose invariant is flat — cheap —

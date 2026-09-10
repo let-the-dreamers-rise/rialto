@@ -1,6 +1,19 @@
 # Rialto
 
-**Live on Arc testnet.** The oracle Arc did not have is publishing EUR/USD on-chain right now:
+**Pay a foreign invoice in one transaction.**
+
+A supplier bills you €5,000. You hold dollars. Today that costs 40–60bp through a payments
+provider or 200–300bp through a bank, takes one to three days, and arrives with nothing
+linking it back to the invoice. Rialto settles it onchain at **25bp**, at the FX rate that
+actually exists, and the payee receives exactly €5,000 — not "about" €5,000.
+
+For importers, exporters and agencies paying cross-border invoices: the businesses too small
+for a bank's FX desk.
+
+**Live demo:** https://rialto-arc.netlify.app
+
+None of it is possible without reading the real FX rate on-chain, and Arc ships with no price
+oracle. So that came first, and it is live now:
 
 | Contract | Address |
 |---|---|
