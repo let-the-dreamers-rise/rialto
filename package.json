@@ -14,7 +14,10 @@
     "simulate": "bash scripts/run-simulation.sh",
     "preflight": "node scripts/preflight.mjs",
     "corridors": "bash scripts/run-corridors.sh",
-    "verify": "node scripts/verify.mjs"
+    "verify": "node scripts/verify.mjs",
+    "forward": "node scripts/live-forward.mjs arc-testnet",
+    "forward:dry": "bash scripts/dry-run-forward.sh",
+    "instruments": "node scripts/deploy-instruments.mjs arc-testnet"
   },
   "keywords": [],
   "author": "",

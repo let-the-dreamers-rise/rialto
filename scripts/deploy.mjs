@@ -37,7 +37,7 @@ const wallet = createWalletClient({ account, chain, transport })
 const publishers = (process.env.PUBLISHERS ?? account.address).split(',').map((s) => s.trim())
 const quorum = BigInt(process.env.QUORUM ?? 1)
 const AMP = BigInt(process.env.AMP ?? 200)
-const FEE_PPM = BigInt(process.env.FEE_PPM ?? 400)
+const FEE_PPM = BigInt(process.env.FEE_PPM ?? 2500)
 const PROTOCOL_SHARE = BigInt(process.env.PROTOCOL_SHARE ?? 500_000)
 const TREASURY = process.env.TREASURY ?? account.address
 const MAX_AGE = BigInt(process.env.MAX_RATE_AGE ?? 900) // 15 minutes

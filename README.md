@@ -13,13 +13,46 @@ for a bank's FX desk.
 **Live demo:** https://rialto-arc.netlify.app
 
 None of it is possible without reading the real FX rate on-chain, and Arc ships with no price
-oracle. So that came first, and it is live now:
+oracle. So that came first. The whole stack is now deployed and source-verified on Arc testnet:
 
-| Contract | Address |
+| Contract | Address | What it does |
+|---|---|---|
+| `RialtoOracle` | [`0x391c0539…8c5754f`](https://testnet.arcscan.app/address/0x391c05393778eae959cf16296e308d5538c5754f) | Signed FX feed, publisher quorum |
+| `OracleRateSource` | [`0xda0a00a8…b4d18198`](https://testnet.arcscan.app/address/0xda0a00a82455d6a28b4695be97e6fdbfb4d18198) | Binds a pool to a pair |
+| `RialtoPool` | [`0x089879ab…3b1f9cfc`](https://testnet.arcscan.app/address/0x089879abc2a71e003a71eb9047acd0d63b1f9cfc) | Rate-anchored stableswap, 25bp |
+| `RialtoSettlement` | [`0xd8c925d0…39923899`](https://testnet.arcscan.app/address/0xd8c925d0f500356bb8f87ac52faf4c9439923899) | Exact-output invoice settlement |
+| `RialtoRouter` | [`0x978e8fe2…242a1172`](https://testnet.arcscan.app/address/0x978e8fe239ed8c7b669687afa55a6310242a1172) | Multi-hop, up to 4 hops |
+| `RialtoForward` | [`0xf49f0ba2…4fde0751`](https://testnet.arcscan.app/address/0xf49f0ba2e427ee045755199ebf63dbc64fde0751) | Collateralised rate locks |
+
+## A rate lock, opened and settled on Arc
+
+Not a diagram. An importer locked EUR 1,000 at **1.1622** — the ECB reference rate of
+2026-09-04 — against a writer who took the other side. Both posted 5 USDC of margin. At
+maturity the feed carried **1.1652**, the ECB print of 2026-09-09, and the position settled
+against it: buying the euros at that rate would have cost 1,165.20 USDC instead of the
+1,162.20 the lock had fixed, so the forward paid the importer the **3.00 USDC** difference out
+of the writer's margin.
+
+| Step | Transaction |
 |---|---|
-| `RialtoOracle` | [`0x391c05393778eae959cf16296e308d5538c5754f`](https://testnet.arcscan.app/address/0x391c05393778eae959cf16296e308d5538c5754f) |
-| `RialtoPool` | [`0xee754d16908335a13c0c2b938a8c897a9cf694c4`](https://testnet.arcscan.app/address/0xee754d16908335a13c0c2b938a8c897a9cf694c4) |
-| `OracleRateSource` | [`0xda0a00a82455d6a28b4695be97e6fdbfb4d18198`](https://testnet.arcscan.app/address/0xda0a00a82455d6a28b4695be97e6fdbfb4d18198) |
+| Counterparty funded | [`0x723661d8…d408a94e`](https://testnet.arcscan.app/tx/0x723661d873fefa2568256ad5566d40c1ce9fc862321a070cf2ff14edd408a94e) |
+| Writer posts the offer | [`0x635b6721…8cb2e4f3`](https://testnet.arcscan.app/tx/0x635b6721bff0c235354f17cf09d215c6716bd47afd03ef7c85925f7e8cb2e4f3) |
+| Importer locks the rate | [`0x55c35848…0826cbfb`](https://testnet.arcscan.app/tx/0x55c358481f46fb298726c5560840f00df4a7a3b858714816f1cc375d0826cbfb) |
+| Settlement rate posted | [`0x4e79b342…75a31aac`](https://testnet.arcscan.app/tx/0x4e79b3426cf4ea118e8293e046211b0f2bf3c278750e89c5ccb2969475a31aac) |
+| Settled against the oracle | [`0x15e2659a…e459742`](https://testnet.arcscan.app/tx/0x15e2659a25163842ea43763f3628a5b33f2a60da7fde508dd1cb0e928e459742) |
+
+Both rates are real ECB reference prints. Two things are compressed and the script says so in
+its header: the attestation's `observedAt` is the chain's clock rather than the ECB
+publication date, because the oracle rejects a timestamp more than `MAX_CLOCK_SKEW` out; and
+the tenor is minutes rather than thirty days, so one run covers the whole lifecycle. The
+payout, the collateral accounting and the oracle read are not compressed. Reproduce with
+`node scripts/live-forward.mjs arc-testnet` — or rehearse it for free first with
+`scripts/dry-run-forward.sh`, which asserts a clean local chain before it starts.
+
+The forward is cash-settled in USDC, which is why it runs today. **The spot pools are deployed
+and verified but hold zero reserves**: Circle's faucet issues testnet EURC to a wallet, and
+the pool needs seeding before it can quote. That is a funding step, not a missing piece — the
+swap, settlement and routing paths are covered by the 71 tests.
 
 Reading the rate takes one call and no permission:
 
@@ -29,7 +62,7 @@ Reading the rate takes one call and no permission:
         .getRate(keccak256("EUR/USD"), 900);   // reverts if older than your bound
 ```
 
-All three are **source-verified on Arcscan**, so the code at those addresses can be read
+All six are **source-verified on Arcscan**, so the code at those addresses can be read
 rather than trusted. An update costs **0.0017 USDC**. Anyone on Arc can read the feed — it is
 not ours to keep, and nothing on that chain could read an FX rate before it existed.
 
@@ -260,6 +293,9 @@ Data: European Central Bank, series `EXR.D.USD.EUR.SP00.A`, fetched to
 | `scripts/simulate.mjs` | The 259-day EUR/USD comparison |
 | `scripts/simulate-corridors.mjs` | The same comparison across six real FX corridors |
 | `scripts/deploy.mjs` | Local and Arc testnet, using the live USDC and EURC on Arc |
+| `scripts/deploy-instruments.mjs` | Adds pool, settlement, router and forward to an oracle already live |
+| `scripts/live-forward.mjs` | Opens, fills and settles a real forward; writes the tx record the demo page reads |
+| `scripts/dry-run-forward.sh` | Rehearses that lifecycle on a verified-clean local chain first |
 | `test/` | 71 tests across the oracle, pool, settlement, router and forwards |
 | `REVIEW.md` | Adversarial review: what breaks it, measured |
 
@@ -276,10 +312,11 @@ npm run preflight   # check Arc testnet will take the deployment
 
 ## Status
 
-Contracts, SDK and simulation run against a chain configured with Arc's chain ID and gas
-semantics. Arc **testnet** deployment is wired and preflighted — the live USDC
-(`0x3600…0000`) and EURC (`0x89B5…D72a`) are read and confirmed on-chain — and needs a
-funded deployer.
+All six contracts are **deployed and source-verified on Arc testnet**, against the live USDC
+(`0x3600…0000`) and EURC (`0x89B5…D72a`). The oracle carries a real EUR/USD print and the
+forward carries a position that was opened, filled by a second party and settled against that
+feed. The spot pools hold zero reserves until the faucet's EURC is in a wallet that can seed
+them; everything else above is on-chain now.
 
 **Forwards are a derivative, and that is a different legal posture.** The spot pools are
 plainly non-custodial software. A rate lock has a stronger claim to being a regulated

@@ -79,9 +79,28 @@ provide on this chain.
 
 ## Arc and Circle products
 
-**Are you live on Arc?** Not yet. Deployment is wired and preflighted against Arc testnet,
-reading the **live USDC (`0x3600…0000`) and EURC (`0x89B5…D72a`)** on-chain, both confirmed
-6-decimal. ⚠ Update with the testnet address before submitting.
+**Are you live on Arc?** Yes, on testnet. Six contracts deployed and **source-verified on
+Arcscan**, reading the live USDC (`0x3600…0000`) and EURC (`0x89B5…D72a`), both confirmed
+6-decimal:
+
+| Contract | Address |
+|---|---|
+| `RialtoOracle` | [`0x391c05393778eae959cf16296e308d5538c5754f`](https://testnet.arcscan.app/address/0x391c05393778eae959cf16296e308d5538c5754f) |
+| `OracleRateSource` | [`0xda0a00a82455d6a28b4695be97e6fdbfb4d18198`](https://testnet.arcscan.app/address/0xda0a00a82455d6a28b4695be97e6fdbfb4d18198) |
+| `RialtoPool` | [`0x089879abc2a71e003a71eb9047acd0d63b1f9cfc`](https://testnet.arcscan.app/address/0x089879abc2a71e003a71eb9047acd0d63b1f9cfc) |
+| `RialtoSettlement` | [`0xd8c925d0f500356bb8f87ac52faf4c9439923899`](https://testnet.arcscan.app/address/0xd8c925d0f500356bb8f87ac52faf4c9439923899) |
+| `RialtoRouter` | [`0x978e8fe239ed8c7b669687afa55a6310242a1172`](https://testnet.arcscan.app/address/0x978e8fe239ed8c7b669687afa55a6310242a1172) |
+| `RialtoForward` | [`0xf49f0ba2e427ee045755199ebf63dbc64fde0751`](https://testnet.arcscan.app/address/0xf49f0ba2e427ee045755199ebf63dbc64fde0751) |
+
+The oracle carries a live EUR/USD print, and **the forward carries a position that was opened,
+filled by a second party and settled against that feed** — five transactions on Arc testnet,
+linked from the demo page. An importer locked EUR 1,000 at 1.1622 (ECB 2026-09-04); the feed
+settled at 1.1652 (ECB 2026-09-09); the lock paid them the 3.00 USDC difference out of the
+writer's margin, uncapped, with the collateral accounting balancing to the cent.
+
+The spot pools hold zero reserves: Circle's faucet issues testnet EURC to a wallet, not to a
+contract, so seeding is a funding step we have not completed. The forward is cash-settled in
+USDC, which is why that one runs end to end today.
 
 **Why Arc is core to the flow of value.**
 
@@ -166,9 +185,12 @@ What exists:
 - `REVIEW.md`: an adversarial review that found and fixed an unbounded oracle failure mode
   — a compromised publisher set could take 37.8% of a pool's book in one print, now bounded
   at ~3.2% — and measured what remains exploitable.
-- Arc testnet preflight passing against live USDC and EURC.
+- **Six contracts deployed and source-verified on Arc testnet**, plus a forward opened,
+  filled and settled on-chain against the live oracle — not a testnet deployment that merely
+  exists, but one carrying a completed instrument a reviewer can audit transaction by
+  transaction.
 
-⚠ Before submitting: an **Arc testnet contract address** and a demo video.
+⚠ Before submitting: a demo video, the legal entity, and founder bios.
 
 ## Where this sits next to what is already on Arc
 

@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rialto — the price oracle Arc did not have</title>
-<meta name="description" content="Live on Arc testnet: a pull-based FX oracle and a rate-anchored stableswap. Read the feed yourself.">
+<title>Rialto — pay a foreign invoice in one transaction</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="description" content="Cross-border invoice settlement on Arc at 25bp, at the real FX rate. Live on Arc testnet: an FX oracle, rate-anchored pools, and a rate lock opened and settled on-chain.">
 <style>
   :root{
     color-scheme: light dark;
@@ -32,6 +33,41 @@
   .live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);
             margin-right:7px;vertical-align:middle;animation:pulse 2s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* ---- what is live ---- */
+  .status{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0 30px}
+  .status>div{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .status .sl{display:block;font:600 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+              color:var(--ink-3);margin-bottom:7px}
+  .status .sv{font-size:14px;color:var(--ink);font-weight:600}
+  .status .sd{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.45}
+  .status .on{color:var(--ok)}
+  .ledger{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:22px 0}
+  .ledger-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+               padding:14px 20px;border-bottom:1px solid var(--line);background:var(--sunk)}
+  .ledger-head .t{font:600 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+  .ledger-head .r{font:12px/1 var(--mono);color:var(--ink-3)}
+  .lrow{display:grid;grid-template-columns:26px 1fr auto;gap:12px;align-items:baseline;
+        padding:12px 20px;border-bottom:1px solid var(--line)}
+  .lrow:last-child{border-bottom:0}
+  .lrow .i{font:600 11px/1.5 var(--mono);color:var(--ink-3)}
+  .lrow .w b{display:block;font-size:14px;color:var(--ink);font-weight:600}
+  .lrow .w span{font-size:12.5px;color:var(--ink-2)}
+  .lrow .h{font:11.5px/1.5 var(--mono)}
+  .lrow .h a{color:var(--b);text-decoration:none;border-bottom:1px solid transparent}
+  .lrow .h a:hover{border-bottom-color:var(--b)}
+  .settled{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+           border-top:1px solid var(--line)}
+  .settled>div{background:var(--sunk);padding:14px 20px}
+  .settled .k{display:block;font:600 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+              color:var(--ink-3);margin-bottom:6px}
+  .settled .v{font-size:17px;font-weight:650;color:var(--ink);font-variant-numeric:tabular-nums}
+  .settled .v.win{color:var(--ok)}
+  @media (max-width:720px){
+    .status,.settled{grid-template-columns:1fr}
+    .lrow{grid-template-columns:22px 1fr;row-gap:4px}
+    .lrow .h{grid-column:2}
+  }
 
   /* ---- the instrument ---- */
   .rig{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:26px 0}
@@ -137,6 +173,33 @@
   <p class="note" style="margin-bottom:34px">Every currency pair works this way, including ones
     with no direct pool: routing through USDC means N corridors give N(N−1)/2 pairs, so a
     Brazilian importer pays a Philippine peso invoice without a BRL/PHP pool existing.</p>
+
+  <h2>What is live on Arc testnet right now</h2>
+  <div class="status" id="status">
+    <div><span class="sl">Oracle</span><span class="sv">reading…</span></div>
+    <div><span class="sl">Rate lock</span><span class="sv">reading…</span></div>
+    <div><span class="sl">Spot pools</span><span class="sv">reading…</span></div>
+  </div>
+
+  <p>An invoice has terms. "€5,000, due in 30 days" means the payer finds out what they owe a
+    month after agreeing the price, and over a month EUR/USD moves a percent or two — the
+    emerging-market corridors below move <strong>14 to 18 percent a year</strong>. Against that,
+    being 25bp cheaper than a bank is noise. A business does not lie awake over a quarter of a
+    percent; it lies awake over the three percent it cannot predict. So the second half of the
+    product is a rate lock, collateralised and cash-settled in USDC.</p>
+  <p>Here is one, done. Not a diagram — a position opened, filled by a second party and settled
+    against the oracle, on Arc testnet. Every hash opens on the explorer.</p>
+
+  <div class="ledger">
+    <div class="ledger-head">
+      <span class="t"><span class="live-dot"></span><span id="lf-title">RialtoForward · EUR/USD</span></span>
+      <span class="r" id="lf-when">—</span>
+    </div>
+    <div id="lf-rows"><div class="lrow"><span class="i"></span><span class="w">
+      <span>loading the settled position…</span></span><span class="h"></span></div></div>
+    <div class="settled" id="lf-result"></div>
+  </div>
+  <p class="note" id="lf-note"></p>
 
   <h2>The piece that makes it possible</h2>
   <p>None of the above is possible without knowing the real FX rate on-chain, and
@@ -252,10 +315,12 @@ async function refresh() {
     $('#quorum').textContent = s.oracle.quorum + '-of-N'
     $('#src').textContent = `read at block ${fmt(Number(s.block.number))}`
     renderCards(s)
+    renderStatus(s)
+    // The status strip above carries the pool caveat; the footer records when the page last
+    // actually reached the chain, so a stale render is visible rather than silent.
     $('#pool-note').textContent =
-      `Pool ${s.addresses.pool} is deployed and verified with amplification ${s.pool.amp} and a `
-      + `${Number(s.pool.feePpm)/100}bp fee; reserves are ${s.pool.reserve0}/${s.pool.reserve1} — `
-      + `it is awaiting testnet EURC before it can quote.`
+      `Read from Arc testnet at block ${fmt(Number(s.block.number))}, `
+      + `${new Date(s.asOf).toISOString().replace('T', ' ').slice(0, 19)} UTC.`
   } catch (e) {
     $('#src').textContent = 'chain unreachable'
   }
@@ -267,7 +332,10 @@ function renderCards(s) {
     ['RialtoOracle', s.addresses.oracle, `quorum ${s.oracle.quorum} · ${Number(s.oracle.devFreshBps)/100}% fresh → ${Number(s.oracle.devCeilingBps)/100}% ceiling`],
     ['OracleRateSource', s.addresses.rateSource, 'binds the pool to EUR/USD'],
     ['RialtoPool', s.addresses.pool, `amp ${s.pool.amp} · fee ${Number(s.pool.feePpm)/100}bp · protocol ${Number(s.pool.protocolSharePpm)/10000}%`],
-  ]
+    ['RialtoSettlement', s.addresses.settlement, 'exact-output invoice settlement, paid straight to the payee'],
+    ['RialtoRouter', s.addresses.router, 'multi-hop exact-output, up to 4 hops'],
+    ['RialtoForward', s.addresses.forward, 'collateralised rate locks — carrying a settled position'],
+  ].filter(([, a]) => a)
   $('#cards').innerHTML = items.map(([n, a, p]) => `
     <div class="card">
       <div class="n">${n}</div>
@@ -276,6 +344,68 @@ function renderCards(s) {
       <div class="p">${p}</div>
     </div>`).join('')
 }
+
+/* ── what is live: read from the chain, not asserted by the page ── */
+function renderStatus(s) {
+  const seeded = BigInt(s.pool.reserve0) > 0n && BigInt(s.pool.reserve1) > 0n
+  const f = s.forward
+  const locked = f && f.latest
+  const cells = [
+    ['Oracle', `<span class="on">live</span>`,
+      `EUR/USD at ${(Number(s.oracle.rate)/1e18).toFixed(4)}, ${ago(s.oracle.ageSeconds)} old, `
+      + `${s.oracle.quorum}-of-N publisher quorum.`],
+    ['Rate lock', locked
+      ? `<span class="on">live</span>`
+      : 'deployed',
+      locked
+        ? `Position #${f.latest.id} on EUR ${(Number(f.latest.notional)/1e6).toLocaleString('en-US')} `
+          + `${f.latest.settled ? 'settled against the oracle' : 'open, awaiting maturity'}.`
+        : 'No position on the contract yet.'],
+    ['Spot pools', seeded ? `<span class="on">quoting</span>` : 'deployed, not seeded',
+      seeded
+        ? `Reserves ${(Number(s.pool.reserve0)/1e6).toFixed(0)} / ${(Number(s.pool.reserve1)/1e6).toFixed(0)}.`
+        : `Verified at amp ${s.pool.amp} and a ${Number(s.pool.feePpm)/100}bp fee, with zero reserves: `
+          + `Circle's faucet issues testnet EURC to a wallet, not to a contract, so the pool cannot `
+          + `quote until it is seeded. Nothing on this page depends on it.`],
+  ]
+  $('#status').innerHTML = cells.map(([l, v, d]) =>
+    `<div><span class="sl">${l}</span><span class="sv">${v}</span><div class="sd">${d}</div></div>`).join('')
+}
+
+/* ── the settled rate lock ── */
+const SCAN = 'https://testnet.arcscan.app'
+async function renderForward() {
+  let lf
+  try { lf = await fetch('/live-forward.json').then(r => r.json()) } catch { return }
+  if (!lf || !lf.steps) return
+  const usd = (v) => (Number(v) / 1e6).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  $('#lf-title').textContent = `RialtoForward · ${lf.pair} · position #${lf.id}`
+  $('#lf-when').textContent = new Date(lf.ranAt).toISOString().replace('T', ' ').slice(0, 16) + ' UTC'
+  $('#lf-rows').innerHTML = lf.steps.map((st, i) => `
+    <div class="lrow">
+      <span class="i">${String(i + 1).padStart(2, '0')}</span>
+      <span class="w"><b>${st.label}</b><span>${st.detail ?? ''}</span></span>
+      <span class="h"><a href="${SCAN}/tx/${st.tx}" target="_blank" rel="noopener"
+        >${st.tx.slice(0, 10)}…${st.tx.slice(-6)}</a></span>
+    </div>`).join('')
+  $('#lf-result').innerHTML = [
+    ['Locked at', `${lf.strike}`, `ECB ${lf.strikeDate}`, false],
+    ['Settled at', `${lf.settledAt}`, `ECB ${lf.settleDate} · ${lf.moveBps > 0 ? '+' : ''}${lf.moveBps}bp`, false],
+    ['Paid to the importer', `${usd(lf.paidToImporter)} USDC`, `on ${lf.notionalLabel} notional`, true],
+  ].map(([k, v, d, win]) =>
+    `<div><span class="k">${k}</span><span class="v${win ? ' win' : ''}">${v}</span>
+      <div class="sd">${d}</div></div>`).join('')
+  $('#lf-note').innerHTML =
+    `The importer locked ${lf.notionalLabel} at ${lf.strike}. The euro rose to ${lf.settledAt}, so `
+    + `buying it at settlement would have cost ${usd(lf.spotCost)} USDC instead of the `
+    + `${usd(lf.lockedCost)} USDC they had fixed. The forward paid them the `
+    + `${usd(lf.paidToImporter)} USDC difference, out of the writer's margin. `
+    + `Both rates are real ECB reference prints; the attestation timestamp is the chain's, because `
+    + `the oracle rejects a clock more than a minute out, and the tenor is compressed to minutes so `
+    + `the lifecycle fits in one run. Payout is capped at the loser's collateral by construction — `
+    + `this one settled uncapped${lf.capped ? ' — no: this one hit the cap' : ''}.`
+}
+renderForward()
 
 /* ── the interactive call ── */
 const BOUNDS = [[60,'60 seconds'],[900,'15 minutes'],[3600,'1 hour'],[86400,'1 day']]

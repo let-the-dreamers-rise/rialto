@@ -28,7 +28,14 @@ const targets = [
   { address: d.oracle,     name: 'RialtoOracle.sol:RialtoOracle' },
   { address: d.rateSource, name: 'RateSource.sol:OracleRateSource' },
   { address: d.pool,       name: 'RialtoPool.sol:RialtoPool' },
-]
+  { address: d.settlement, name: 'RialtoSettlement.sol:RialtoSettlement' },
+  { address: d.router,     name: 'RialtoRouter.sol:RialtoRouter' },
+  { address: d.forward,    name: 'RialtoForward.sol:RialtoForward' },
+].filter((t) => t.address)
+
+// Blockscout rate-limits, and a 429 on one contract reads exactly like a pass if the body
+// is not checked. Anything that is not an accepted submission is reported as such.
+const results = []
 
 for (const t of targets) {
   const form = new FormData()
@@ -42,8 +49,21 @@ for (const t of targets) {
   try {
     const res = await fetch(url, { method: 'POST', body: form, signal: AbortSignal.timeout(60000) })
     const text = await res.text()
-    console.log(`${t.name.padEnd(34)} ${res.status}  ${text.slice(0, 160)}`)
+    const ok = res.status === 200 && !/too many requests/i.test(text)
+    results.push({ name: t.name, ok, status: res.status })
+    console.log(`${t.name.padEnd(40)} ${res.status}  ${text.slice(0, 140)}`)
   } catch (e) {
-    console.log(`${t.name.padEnd(34)} FAILED ${String(e.message).slice(0, 80)}`)
+    results.push({ name: t.name, ok: false, status: 'error' })
+    console.log(`${t.name.padEnd(40)} FAILED ${String(e.message).slice(0, 80)}`)
   }
+  // Space the submissions out rather than collecting rate-limit responses.
+  await new Promise((r) => setTimeout(r, 4000))
+}
+
+const failed = results.filter((r) => !r.ok)
+console.log(`\n${results.length - failed.length}/${results.length} submissions accepted`)
+if (failed.length) {
+  console.log('not accepted: ' + failed.map((f) => `${f.name} (${f.status})`).join(', '))
+  console.log('re-run for those; a 429 is a rate limit, not a verification failure.')
+  process.exitCode = 1
 }

@@ -6,12 +6,12 @@
   "eurc": "0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a",
   "oracle": "0x391c05393778eae959cf16296e308d5538c5754f",
   "rateSource": "0xda0a00a82455d6a28b4695be97e6fdbfb4d18198",
-  "pool": "0xee754d16908335a13c0c2b938a8c897a9cf694c4",
+  "pool": "0x089879abc2a71e003a71eb9047acd0d63b1f9cfc",
   "treasury": "0xf42d1bD7DBE9FC9099C419070AAbB8086A3Fe4f5",
   "pair": "EUR/USD",
   "pairId": "0xa9226449042e36bf6865099eec57482aa55e3ad026c315a0e4a692b776c318ca",
   "amp": "200",
-  "feePpm": "400",
+  "feePpm": "2500",
   "protocolSharePpm": "500000",
   "publishers": [
     "0xf42d1bD7DBE9FC9099C419070AAbB8086A3Fe4f5"
@@ -19,5 +19,10 @@
   "quorum": "1",
   "maxRateAge": "900",
   "deployer": "0xf42d1bD7DBE9FC9099C419070AAbB8086A3Fe4f5",
-  "deployedAt": "2026-09-09T18:26:18.546Z"
+  "deployedAt": "2026-09-09T18:26:18.546Z",
+  "settlement": "0xd8c925d0f500356bb8f87ac52faf4c9439923899",
+  "router": "0x978e8fe239ed8c7b669687afa55a6310242a1172",
+  "forward": "0xf49f0ba2e427ee045755199ebf63dbc64fde0751",
+  "previousPool": "0xee754d16908335a13c0c2b938a8c897a9cf694c4",
+  "instrumentsDeployedAt": "2026-09-10T13:56:23.427Z"
 }
