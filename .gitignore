@@ -5,3 +5,5 @@ deployments/local.json
 results/*.tmp
 *.log
 .vercel/
+site/node_modules/
+site/.netlify/
