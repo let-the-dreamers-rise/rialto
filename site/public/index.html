@@ -241,8 +241,9 @@
   <p class="note"><b>What feeds it, and what that is not.</b> One command fetches the current
     ECB reference rate and posts it — that is the whole publisher, and the cost above is the
     real transaction. But the ECB publishes once a day while the pool settles against a
-    15-minute bound, so the publisher re-attests the same value through the day to keep the
-    feed inside it. That is, strictly, a daily number wearing an hourly timestamp. A
+    15-minute bound, so the publisher re-attests the same value every ten minutes to keep the
+    feed inside it: about 0.13 USDC a day, and strictly a daily number held inside an
+    intraday bound. A
     production feed takes intraday quotes from several independent publishers — which is also
     the only thing that makes an M-of-N quorum mean anything, since a quorum of one publisher
     reading one source is a trusted feed with extra steps. Both limitations are in

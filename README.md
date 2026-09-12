@@ -82,8 +82,10 @@ yesterday's price — that is the safety property working, and the demo page sho
 print is the one claim on that page a reviewer could disprove in a single call.
 
 **The ECB publishes once a day.** The pool settles against a 15-minute bound, so the
-publisher re-attests the same value through the day to keep the feed inside it. That keeps a
-demo honest-looking while being, strictly, a daily number wearing an hourly timestamp. A
+publisher re-attests the same value every ten minutes to keep the feed inside it — about
+0.13 USDC a day at the measured cost. An hourly publisher would leave the feed outside that
+bound for 45 minutes in every 60. That keeps a demo honest-looking while being, strictly, a
+daily number held inside an intraday bound. A
 production feed takes intraday quotes from several independent publishers — which is also
 the only thing that makes the M-of-N quorum mean anything, since a quorum of one publisher
 reading one source is a trusted feed with extra steps. Both limitations are in `REVIEW.md`

@@ -92,7 +92,12 @@ export default async () => {
   }
 }
 
-// Hourly. The ECB publishes once a day, so most runs re-attest the same value to keep the
-// feed inside the 15-minute bound the pool settles against — the README is explicit that
-// this is a demo-grade feed and why an intraday source is what production needs.
-export const config = { schedule: '17 * * * *' }
+// Every ten minutes, because the pool settles against a 15-minute bound: an hourly
+// publisher would leave the feed outside that bound for 45 minutes in every 60, and the
+// page would correctly report it stale almost all the time.
+//
+// At the measured 0.00093 USDC per update that is about 0.13 USDC a day. The ECB publishes
+// once a day, so most of these runs re-attest the same value — the README and the page are
+// both explicit that this is a daily number held inside an intraday bound, and that a
+// production feed takes intraday quotes from independent publishers instead.
+export const config = { schedule: '*/10 * * * *' }
