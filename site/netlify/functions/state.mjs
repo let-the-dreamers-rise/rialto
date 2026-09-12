@@ -23,6 +23,9 @@ const ORACLE = [
 ]
 const POOL = ['amp','feePpm','protocolSharePpm','reserve0','reserve1'].map((n) =>
   ({ type:'function', name:n, inputs:[], outputs:[{type:'uint256'}], stateMutability:'view' }))
+// The bound the pool itself settles against. Whether the feed counts as fresh is that
+// contract's answer, not the page's opinion.
+const SOURCE = [{ type:'function', name:'maxAge', inputs:[], outputs:[{type:'uint256'}], stateMutability:'view' }]
 
 // The settled position is read back off the chain rather than trusted from the file the
 // script wrote. If someone re-ran the demo, or it never happened, the page shows what the
@@ -56,6 +59,11 @@ export default async () => {
       ['amp','feePpm','protocolSharePpm','reserve0','reserve1'].map(async (n) =>
         [n, await client.readContract({ address: D.pool, abi: POOL, functionName: n })])))
 
+    let maxRateAge = null
+    try {
+      maxRateAge = await client.readContract({ address: D.rateSource, abi: SOURCE, functionName: 'maxAge' })
+    } catch { /* reported as unknown rather than guessed */ }
+
     let forward = null
     try {
       const count = await client.readContract({ address: D.forward, abi: FORWARD, functionName: 'offers' })
@@ -74,7 +82,7 @@ export default async () => {
       gasPriceGwei: Number(gasPrice) / 1e9,
       oracle: { rate: feed.rate, observedAt: feed.observedAt, postedAt: feed.postedAt,
                 ageSeconds: Number(block.timestamp) - Number(feed.observedAt),
-                quorum, devFreshBps: devFresh, devCeilingBps: devCeiling },
+                quorum, devFreshBps: devFresh, devCeilingBps: devCeiling, maxRateAge },
       pool, forward, asOf: new Date().toISOString(),
     }), { headers })
   } catch (e) {

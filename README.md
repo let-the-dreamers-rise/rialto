@@ -63,10 +63,31 @@ Reading the rate takes one call and no permission:
 ```
 
 All six are **source-verified on Arcscan**, so the code at those addresses can be read
-rather than trusted. An update costs **0.0017 USDC**. Anyone on Arc can read the feed — it is
-not ours to keep, and nothing on that chain could read an FX rate before it existed.
+rather than trusted. An update costs **0.00093 USDC** — measured, with the transaction linked
+from the demo page, on a warm storage slot; the first write to a new pair costs more. Anyone
+on Arc can read the feed — it is not ours to keep, and nothing on that chain could read an FX
+rate before it existed.
 
 Reproduce the verification with `npm run verify`.
+
+### What feeds it, and what that is not
+
+`npm run publish` fetches the current ECB reference rate and posts it. That is the whole
+publisher, and it is worth being precise about what it gives you.
+
+A pull feed is only as fresh as whoever posts to it. `getRate` reverts past the bound the
+*caller* names, so a feed nobody updates stops trades rather than settling them at
+yesterday's price — that is the safety property working, and the demo page shows the feed as
+**stale** rather than **live** when it happens, because a green badge over a two-day-old
+print is the one claim on that page a reviewer could disprove in a single call.
+
+**The ECB publishes once a day.** The pool settles against a 15-minute bound, so the
+publisher re-attests the same value through the day to keep the feed inside it. That keeps a
+demo honest-looking while being, strictly, a daily number wearing an hourly timestamp. A
+production feed takes intraday quotes from several independent publishers — which is also
+the only thing that makes the M-of-N quorum mean anything, since a quorum of one publisher
+reading one source is a trusted feed with extra steps. Both limitations are in `REVIEW.md`
+and neither is solved by this deployment.
 
 ---
 

@@ -17,7 +17,8 @@
     "verify": "node scripts/verify.mjs",
     "forward": "node scripts/live-forward.mjs arc-testnet",
     "forward:dry": "bash scripts/dry-run-forward.sh",
-    "instruments": "node scripts/deploy-instruments.mjs arc-testnet"
+    "instruments": "node scripts/deploy-instruments.mjs arc-testnet",
+    "publish": "node scripts/publish-rate.mjs"
   },
   "keywords": [],
   "author": "",

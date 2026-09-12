@@ -1,0 +1,14 @@
+{
+  "network": "arc-testnet",
+  "pair": "EUR/USD",
+  "rate": "1.1592",
+  "ecbDate": "2026-09-11",
+  "tx": "0xd8148d57801139e368e451090b3dec79079b088ee1dbe91625566028fb081f27",
+  "gas": "42393",
+  "costUsdc": "0.000932646",
+  "block": "61691900",
+  "publisher": "0xf42d1bD7DBE9FC9099C419070AAbB8086A3Fe4f5",
+  "explorer": "https://testnet.arcscan.app",
+  "postedAt": "2026-09-12T06:39:41.360Z",
+  "source": "European Central Bank daily reference rates"
+}

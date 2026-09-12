@@ -42,6 +42,7 @@
   .status .sv{font-size:14px;color:var(--ink);font-weight:600}
   .status .sd{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.45}
   .status .on{color:var(--ok)}
+  .status .warn{color:var(--a)}
   .ledger{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:22px 0}
   .ledger-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
                padding:14px 20px;border-bottom:1px solid var(--line);background:var(--sunk)}
@@ -223,7 +224,7 @@
         <span>block <b id="blk">—</b></span>
         <span>gas <b id="gas">—</b></span>
         <span>quorum <b id="quorum">—</b></span>
-        <span>update cost <b>0.0017 USDC</b></span>
+        <span>last update <b id="upd">—</b></span>
       </div>
 
       <div class="try">
@@ -236,6 +237,16 @@
       </div>
     </div>
   </div>
+
+  <p class="note"><b>What feeds it, and what that is not.</b> One command fetches the current
+    ECB reference rate and posts it — that is the whole publisher, and the cost above is the
+    real transaction. But the ECB publishes once a day while the pool settles against a
+    15-minute bound, so the publisher re-attests the same value through the day to keep the
+    feed inside it. That is, strictly, a daily number wearing an hourly timestamp. A
+    production feed takes intraday quotes from several independent publishers — which is also
+    the only thing that makes an M-of-N quorum mean anything, since a quorum of one publisher
+    reading one source is a trusted feed with extra steps. Both limitations are in
+    <code>REVIEW.md</code>; neither is solved by this deployment.</p>
 
   <h2>Deployed and source-verified</h2>
   <div class="cards" id="cards"></div>
@@ -298,8 +309,16 @@
 const $ = (s) => document.querySelector(s)
 const tip = $('#tip')
 const fmt = (n) => n.toLocaleString('en-US')
-const ago = (s) => s < 60 ? `${s}s` : s < 3600 ? `${Math.floor(s/60)}m ${s%60}s`
-                 : s < 86400 ? `${Math.floor(s/3600)}h ${Math.floor(s%3600/60)}m` : `${Math.floor(s/86400)}d`
+// Drops a zero remainder rather than printing "15m 0s", and keeps hours on a day count so a
+// two-day-old feed does not round down to a tidy "1d".
+const ago = (s) => {
+  const unit = (n, u) => `${n}${u}`
+  if (s < 60) return unit(s, 's')
+  if (s < 3600) { const m = Math.floor(s/60), r = s%60; return r ? `${unit(m,'m')} ${unit(r,'s')}` : unit(m,'m') }
+  if (s < 86400) { const h = Math.floor(s/3600), r = Math.floor(s%3600/60); return r ? `${unit(h,'h')} ${unit(r,'m')}` : unit(h,'h') }
+  const d = Math.floor(s/86400), r = Math.floor(s%86400/3600)
+  return r ? `${unit(d,'d')} ${unit(r,'h')}` : unit(d,'d')
+}
 
 /* ── live oracle ── */
 let state = null
@@ -350,10 +369,20 @@ function renderStatus(s) {
   const seeded = BigInt(s.pool.reserve0) > 0n && BigInt(s.pool.reserve1) > 0n
   const f = s.forward
   const locked = f && f.latest
+  // A feed is fresh or not according to the bound the pool settles against, which is read
+  // from the rate source. Saying "live" over a two-day-old print would be the one claim on
+  // this page a reviewer could disprove in a single call.
+  const bound = s.oracle.maxRateAge ? Number(s.oracle.maxRateAge) : 900
+  const fresh = s.oracle.ageSeconds <= bound
   const cells = [
-    ['Oracle', `<span class="on">live</span>`,
+    ['Oracle', fresh ? `<span class="on">live</span>` : `<span class="warn">stale</span>`,
       `EUR/USD at ${(Number(s.oracle.rate)/1e18).toFixed(4)}, ${ago(s.oracle.ageSeconds)} old, `
-      + `${s.oracle.quorum}-of-N publisher quorum.`],
+      + `${s.oracle.quorum}-of-N publisher quorum. `
+      + (fresh
+          ? `Inside the ${ago(bound)} bound the pool settles against.`
+          : `Past the ${ago(bound)} bound the pool settles against, so <code>getRate</code> reverts `
+            + `for it and trading stops rather than pricing off a stale number — try it below. `
+            + `A pull feed is only as fresh as whoever posts to it.`)],
     ['Rate lock', locked
       ? `<span class="on">live</span>`
       : 'deployed',
@@ -372,8 +401,21 @@ function renderStatus(s) {
     `<div><span class="sl">${l}</span><span class="sv">${v}</span><div class="sd">${d}</div></div>`).join('')
 }
 
-/* ── the settled rate lock ── */
 const SCAN = 'https://testnet.arcscan.app'
+
+/* ── what the feed costs to keep alive ── */
+async function renderPublish() {
+  try {
+    const r = await fetch('/last-publish.json').then(x => x.json())
+    const cost = Number(r.costUsdc)
+    $('#upd').innerHTML = `<a href="${SCAN}/tx/${r.tx}" target="_blank" rel="noopener"
+      >${cost.toFixed(5)} USDC</a>`
+    $('#upd').title = `${r.rate} from the ECB print of ${r.ecbDate}, ${r.gas} gas`
+  } catch { $('#upd').textContent = '—' }
+}
+renderPublish()
+
+/* ── the settled rate lock ── */
 async function renderForward() {
   let lf
   try { lf = await fetch('/live-forward.json').then(r => r.json()) } catch { return }
