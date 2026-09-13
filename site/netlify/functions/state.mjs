@@ -21,7 +21,10 @@ const ORACLE = [
   { type:'function', name:'MAX_DEVIATION_BPS', inputs:[], outputs:[{type:'uint256'}], stateMutability:'view' },
   { type:'function', name:'MAX_ABSOLUTE_DEVIATION_BPS', inputs:[], outputs:[{type:'uint256'}], stateMutability:'view' },
 ]
-const POOL = ['amp','feePpm','protocolSharePpm','reserve0','reserve1'].map((n) =>
+// protocolFees0/1 are the business model as an on-chain balance rather than a projection:
+// what the protocol has actually earned from settled volume.
+const POOL_FIELDS = ['amp','feePpm','protocolSharePpm','reserve0','reserve1','protocolFees0','protocolFees1']
+const POOL = POOL_FIELDS.map((n) =>
   ({ type:'function', name:n, inputs:[], outputs:[{type:'uint256'}], stateMutability:'view' }))
 // The bound the pool itself settles against. Whether the feed counts as fresh is that
 // contract's answer, not the page's opinion.
@@ -56,7 +59,7 @@ export default async () => {
       client.readContract({ address: D.oracle, abi: ORACLE, functionName: 'MAX_ABSOLUTE_DEVIATION_BPS' }),
     ])
     const pool = Object.fromEntries(await Promise.all(
-      ['amp','feePpm','protocolSharePpm','reserve0','reserve1'].map(async (n) =>
+      POOL_FIELDS.map(async (n) =>
         [n, await client.readContract({ address: D.pool, abi: POOL, functionName: n })])))
 
     let maxRateAge = null

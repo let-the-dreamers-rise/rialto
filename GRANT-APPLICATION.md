@@ -98,9 +98,22 @@ linked from the demo page. An importer locked EUR 1,000 at 1.1622 (ECB 2026-09-0
 settled at 1.1652 (ECB 2026-09-09); the lock paid them the 3.00 USDC difference out of the
 writer's margin, uncapped, with the collateral accounting balancing to the cent.
 
-The spot pools hold zero reserves: Circle's faucet issues testnet EURC to a wallet, not to a
-contract, so seeding is a funding step we have not completed. The forward is cash-settled in
-USDC, which is why that one runs end to end today.
+**And the headline flow runs.** The pool is seeded from a faucet drip — 23.18 USDC against
+EUR 20.00, balanced in value at the oracle rate — and a payer holding only dollars settled
+invoice `INV-2026-114` against it: the payee received **exactly EUR 1.00**, the payer paid
+1.164 USDC at an effective 1.1624, and the all-in cost was **27bp** — the 25bp fee plus 2bp
+of slippage on a book that small. Payer, payee and LP are three separate addresses.
+
+The protocol's share of that is **0.001253 EURC**, or 12.53bp, sitting in `protocolFees1` on
+the pool contract. That is the business model as an on-chain balance rather than a
+projection, and it is a fraction of a cent because the invoice was one euro: Circle's faucet
+meters testnet EURC at 20 per request, so the drip is the whole book. The rate is the claim,
+not the total.
+
+**What has not run on-chain is the router.** Multi-hop settlement needs a second seeded
+corridor, and a second corridor needs testnet liquidity we do not have. It is deployed,
+verified and covered by ten tests, and it has not routed a live trade. Depth across corridors
+is the first thing this grant buys.
 
 **Why Arc is core to the flow of value.**
 

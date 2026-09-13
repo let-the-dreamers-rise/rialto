@@ -175,6 +175,24 @@
     with no direct pool: routing through USDC means N corridors give N(N−1)/2 pairs, so a
     Brazilian importer pays a Philippine peso invoice without a BRL/PHP pool existing.</p>
 
+  <h2>Which part of the payment this is</h2>
+  <p>Rialto is not a payments company and does not pretend to be one. A cross-border payment
+    has three legs — get in, convert, get out — and <strong>only the middle one is broken on
+    Arc</strong>, because the chain cannot read an FX rate. That leg is the whole product.</p>
+  <div class="who">
+    <div><span class="wk">Getting in — not us</span>Circle Mint, an exchange, or a USDC
+      balance the business already holds. Circle has spent years on this and it works.</div>
+    <div><span class="wk">The FX leg — this</span>USDC to the exact euro amount billed, at
+      the real rate, 25bp, one transaction, invoice reference on-chain. Nothing on Arc could
+      do this, because nothing on Arc could read a price.</div>
+    <div><span class="wk">Getting out — not us</span>The payee holds EURC, or cashes to a
+      local account through a partner. Several of them are already Circle grantees.</div>
+  </div>
+  <p class="note">So the honest scope: no KYC, no fiat ramps, no local payout, no licence to
+    hold client money. Those are someone else's competence and Circle already funds that
+    network. What that network cannot do today is convert at a rate the chain can verify, and
+    that is the gap every corridor below runs through.</p>
+
   <h2>What is live on Arc testnet right now</h2>
   <div class="status" id="status">
     <div><span class="sl">Oracle</span><span class="sv">reading…</span></div>
@@ -182,6 +200,23 @@
     <div><span class="sl">Spot pools</span><span class="sv">reading…</span></div>
   </div>
 
+  <p><b>The invoice above, settled.</b> A payer holding only dollars, a payee who is owed
+    euros, and a pool that prices off the oracle. One transaction: the payee received the
+    exact amount billed, and the invoice reference and the rate charged are on-chain for
+    whoever has to reconcile it.</p>
+
+  <div class="ledger">
+    <div class="ledger-head">
+      <span class="t"><span class="live-dot"></span><span id="iv-title">RialtoSettlement</span></span>
+      <span class="r" id="iv-when">—</span>
+    </div>
+    <div id="iv-rows"><div class="lrow"><span class="i"></span><span class="w">
+      <span>loading the settled invoice…</span></span><span class="h"></span></div></div>
+    <div class="settled" id="iv-result"></div>
+  </div>
+  <p class="note" id="iv-note"></p>
+
+  <h2>The other half: locking the rate</h2>
   <p>An invoice has terms. "€5,000, due in 30 days" means the payer finds out what they owe a
     month after agreeing the price, and over a month EUR/USD moves a percent or two — the
     emerging-market corridors below move <strong>14 to 18 percent a year</strong>. Against that,
@@ -255,6 +290,21 @@
     bytecode. <code>npm run verify</code> reproduces it from the same standard-json-input the
     contracts were compiled from.</p>
 
+  <h2>How it makes money</h2>
+  <p>Half the 25bp goes to the liquidity providers who carry the inventory; half goes to the
+    protocol. That split is enforced on-chain — <code>protocolSharePpm</code> is capped at
+    half by the contract and the protocol's share can only ever be collected to the treasury
+    address. <strong>12.5bp of everything settled.</strong></p>
+  <div class="status" id="rev">
+    <div><span class="sl">Earned so far</span><span class="sv">reading…</span></div>
+    <div><span class="sl">Per million settled</span><span class="sv">—</span></div>
+    <div><span class="sl">Forwards</span><span class="sv">—</span></div>
+  </div>
+  <p class="note">The first figure is not a projection. It is
+    <code>protocolFees1</code> on the pool contract — what the settled invoice above actually
+    paid the protocol, sitting on-chain where anyone can read it. It is a fraction of a cent
+    because the invoice was EUR 1.00; the rate is the point, not the total.</p>
+
   <h2>Why nobody had built this</h2>
   <p>Circle has announced partner stablecoins in BRL, MXN, PHP, ZAR, JPY, KRW, CAD and AUD.
     Those trade at roughly 5, 17, 57, 16, 150, 1400, 1.4 and 1.5 to the dollar. The only venue
@@ -287,13 +337,15 @@
     because there is nothing native to read. The oracle above is permissionless. It makes our
     pools work; it would make theirs work too.</p>
 
-  <h2>What else is built</h2>
-  <p><code>RialtoSettlement</code> — exact-output invoice settlement, because an invoice is
-    denominated in what the payee receives and carries a reference that has to reconcile.
-    <code>RialtoRouter</code> — multi-hop, so N corridors give N(N−1)/2 pairs instead of N²
-    pools; a Brazilian importer settles a peso invoice with no BRL/PHP pool in existence.
-    <code>RialtoForward</code> — collateralised rate locks, because an invoice has terms and a
-    thirty-day move dwarfs any fee.</p>
+  <h2>What is built but not yet exercised on-chain</h2>
+  <p>Everything above ran on Arc testnet today. One piece has not, and saying which is more
+    useful than implying all of it has.</p>
+  <p><code>RialtoRouter</code> — multi-hop exact-output settlement, so N corridors give
+    N(N−1)/2 pairs instead of N² pools: a Brazilian importer settles a peso invoice with no
+    BRL/PHP pool in existence. It is deployed and source-verified, and covered by ten tests
+    including the ones that reject a repeated pool and a disjoint path. What it has not done
+    is route a live trade, because that needs a second seeded pool and testnet EURC is
+    metered at 20 per request. It is the first thing a grant would buy.</p>
   <p class="note">71 tests · 3 reproducible measurements · an adversarial review that found and
     fixed an unbounded oracle failure mode, and states what remains exploitable.</p>
 
@@ -384,21 +436,39 @@ function renderStatus(s) {
           : `Past the ${ago(bound)} bound the pool settles against, so <code>getRate</code> reverts `
             + `for it and trading stops rather than pricing off a stale number — try it below. `
             + `A pull feed is only as fresh as whoever posts to it.`)],
-    ['Rate lock', locked
-      ? `<span class="on">live</span>`
-      : 'deployed',
+    ['Rate lock',
+      !locked ? 'deployed'
+        : f.latest.settled ? `<span class="on">settled</span>`
+        : `<span class="on">open</span>`,
       locked
         ? `Position #${f.latest.id} on EUR ${(Number(f.latest.notional)/1e6).toLocaleString('en-US')} `
-          + `${f.latest.settled ? 'settled against the oracle' : 'open, awaiting maturity'}.`
+          + `${f.latest.settled ? 'ran to maturity and settled against the oracle' : 'is open, awaiting maturity'}.`
         : 'No position on the contract yet.'],
-    ['Spot pools', seeded ? `<span class="on">quoting</span>` : 'deployed, not seeded',
+    ['Spot pool', seeded ? `<span class="on">quoting</span>` : 'deployed, not seeded',
       seeded
-        ? `Reserves ${(Number(s.pool.reserve0)/1e6).toFixed(0)} / ${(Number(s.pool.reserve1)/1e6).toFixed(0)}.`
+        ? `${(Number(s.pool.reserve0)/1e6).toFixed(2)} USDC and EUR ${(Number(s.pool.reserve1)/1e6).toFixed(2)}, `
+          + `amp ${s.pool.amp}, ${Number(s.pool.feePpm)/100}bp fee. A faucet-sized book — testnet `
+          + `EURC is metered at 20 per request — carrying a settled invoice.`
         : `Verified at amp ${s.pool.amp} and a ${Number(s.pool.feePpm)/100}bp fee, with zero reserves: `
-          + `Circle's faucet issues testnet EURC to a wallet, not to a contract, so the pool cannot `
-          + `quote until it is seeded. Nothing on this page depends on it.`],
+          + `Circle's faucet issues testnet EURC to a wallet, not to a contract, so it cannot quote `
+          + `until someone seeds it.`],
   ]
   $('#status').innerHTML = cells.map(([l, v, d]) =>
+    `<div><span class="sl">${l}</span><span class="sv">${v}</span><div class="sd">${d}</div></div>`).join('')
+
+  const share = Number(s.pool.protocolSharePpm) / 1e6
+  const takeBps = (Number(s.pool.feePpm) / 100) * share
+  const earned = Number(s.pool.protocolFees1) / 1e6
+  const rev = [
+    ['Earned so far', `${earned.toFixed(6)} EURC`,
+      `From the settled invoice, read off <code>protocolFees1</code> on the pool.`],
+    ['Per million settled', `${(takeBps * 100).toLocaleString('en-US')} USDC`,
+      `${takeBps}bp of routed volume — ${Number(s.pool.feePpm)/100}bp charged, ${share * 100}% of it to the protocol.`],
+    ['Forwards', 'nothing, yet',
+      `The rate lock takes no fee in this version. Pricing a derivative before it has users `
+      + `would be a guess, and the contract is simpler without one.`],
+  ]
+  $('#rev').innerHTML = rev.map(([l, v, d]) =>
     `<div><span class="sl">${l}</span><span class="sv">${v}</span><div class="sd">${d}</div></div>`).join('')
 }
 
@@ -415,6 +485,39 @@ async function renderPublish() {
   } catch { $('#upd').textContent = '—' }
 }
 renderPublish()
+
+/* ── the settled invoice ── */
+async function renderInvoice() {
+  let iv
+  try { iv = await fetch('/live-invoice.json').then(r => r.json()) } catch { return }
+  if (!iv || !iv.steps) return
+  $('#iv-title').textContent = `RialtoSettlement · ${iv.invoiceRef}`
+  $('#iv-when').textContent = new Date(iv.ranAt).toISOString().replace('T', ' ').slice(0, 16) + ' UTC'
+  $('#iv-rows').innerHTML = iv.steps.map((st, i) => `
+    <div class="lrow">
+      <span class="i">${String(i + 1).padStart(2, '0')}</span>
+      <span class="w"><b>${st.label}</b><span>${st.detail ?? ''}</span></span>
+      <span class="h"><a href="${SCAN}/tx/${st.tx}" target="_blank" rel="noopener"
+        >${st.tx.slice(0, 10)}…${st.tx.slice(-6)}</a></span>
+    </div>`).join('')
+  $('#iv-result').innerHTML = [
+    ['Payee received', iv.amountOutLabel, iv.exact ? 'exactly as billed' : 'MISMATCH', iv.exact],
+    ['Payer paid', iv.amountInLabel, `at ${Number(iv.effectiveRate).toFixed(4)} USD per EUR`, false],
+    ['All-in cost', `${iv.allInBps}bp`, `over mid of ${iv.midLabel}`, false],
+  ].map(([k, v, d, win]) =>
+    `<div><span class="k">${k}</span><span class="v${win ? ' win' : ''}">${v}</span>
+      <div class="sd">${d}</div></div>`).join('')
+  const book = `${(Number(iv.bookUsdc)/1e6).toFixed(2)} USDC / EUR ${(Number(iv.bookEurc)/1e6).toFixed(2)}`
+  $('#iv-note').innerHTML =
+    `<b>That book is tiny, and the number is honest because of it.</b> Circle's faucet meters `
+    + `testnet EURC at 20 per request, so the pool holds ${book} — the whole drip. The `
+    + `${iv.allInBps}bp is the 25bp fee plus ${iv.allInBps - 25}bp of slippage, which is what a `
+    + `rate-anchored curve does on a book this size: it sits its liquidity at the price that `
+    + `actually exists, so even a trade worth 5% of the book barely moves it. A 1:1 stableswap `
+    + `holding the same tokens would quote this invoice off a price of 1.00. Depth, not design, `
+    + `is what a grant buys — the returns at realistic size are measured below.`
+}
+renderInvoice()
 
 /* ── the settled rate lock ── */
 async function renderForward() {

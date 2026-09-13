@@ -49,10 +49,36 @@ payout, the collateral accounting and the oracle read are not compressed. Reprod
 `node scripts/live-forward.mjs arc-testnet` — or rehearse it for free first with
 `scripts/dry-run-forward.sh`, which asserts a clean local chain before it starts.
 
-The forward is cash-settled in USDC, which is why it runs today. **The spot pools are deployed
-and verified but hold zero reserves**: Circle's faucet issues testnet EURC to a wallet, and
-the pool needs seeding before it can quote. That is a funding step, not a missing piece — the
-swap, settlement and routing paths are covered by the 71 tests.
+## An invoice, settled
+
+The flow the front page promises now runs on Arc too. The pool is seeded with a full faucet
+drip — 23.18 USDC against EUR 20.00, balanced in value at the oracle rate rather than in
+units — and a payer holding only dollars settled a euro invoice against it:
+
+| | |
+|---|---|
+| Invoice | `INV-2026-114`, EUR 1.00 |
+| Payee received | **exactly EUR 1.00** |
+| Payer paid | 1.164 USDC at an effective 1.1624 |
+| All-in | **27bp** over mid: the 25bp fee plus 2bp of slippage |
+| Protocol earned | 0.001253 EURC — 12.53bp, on-chain in `protocolFees1` |
+
+Two transactions: [seeding](https://testnet.arcscan.app/tx/0x4602393ec99e4361870f2f3af02ba01061cf03c20942c58d1e3808ccbb2574a6)
+and [settlement](https://testnet.arcscan.app/tx/0xa0fe947cc439648f461bf556d0ad6f84d85135120b16fa94877f46171e356a96).
+Payer, payee and LP are three separate addresses — an invoice settled from and to the same
+wallet proves nothing. Reproduce with `npm run invoice`, or rehearse it free with
+`scripts/dry-run-invoice.sh`.
+
+**The book is tiny and the 27bp is honest because of it.** Circle's faucet meters testnet
+EURC at 20 per request, so that drip is the whole pool. A trade worth 5% of the book costing
+2bp of slippage is the rate-anchored curve doing exactly what the measurements below predict:
+liquidity sitting at the price that exists. A 1:1 stableswap holding the same two tokens
+would price this invoice off 1.00.
+
+**What has not run on-chain is the router.** Multi-hop needs a second seeded pool, and a
+second corridor needs testnet liquidity we do not have. It is deployed, verified and covered
+by ten tests; it has not routed a live trade, and that distinction is worth more than a
+claim that everything works.
 
 Reading the rate takes one call and no permission:
 
@@ -338,8 +364,9 @@ npm run preflight   # check Arc testnet will take the deployment
 All six contracts are **deployed and source-verified on Arc testnet**, against the live USDC
 (`0x3600…0000`) and EURC (`0x89B5…D72a`). The oracle carries a real EUR/USD print and the
 forward carries a position that was opened, filled by a second party and settled against that
-feed. The spot pools hold zero reserves until the faucet's EURC is in a wallet that can seed
-them; everything else above is on-chain now.
+feed. The pool is seeded and has settled a euro invoice for a payer holding only dollars, with
+the protocol's 12.5bp share sitting on the contract. The one path not exercised on-chain is
+multi-hop routing, which needs a second seeded corridor.
 
 **Forwards are a derivative, and that is a different legal posture.** The spot pools are
 plainly non-custodial software. A rate lock has a stronger claim to being a regulated

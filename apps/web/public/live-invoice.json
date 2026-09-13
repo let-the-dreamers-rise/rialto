@@ -1,0 +1,39 @@
+{
+  "network": "arc-testnet",
+  "chainId": 5042002,
+  "pool": "0x089879abc2a71e003a71eb9047acd0d63b1f9cfc",
+  "settlement": "0xd8c925d0f500356bb8f87ac52faf4c9439923899",
+  "explorer": "https://testnet.arcscan.app",
+  "invoiceRef": "INV-2026-114",
+  "invoiceRefHex": "0x494e562d323032362d3131340000000000000000000000000000000000000000",
+  "amountOut": "1000000",
+  "amountOutLabel": "EUR 1.00",
+  "amountIn": "1162396",
+  "amountInLabel": "1.16 USDC",
+  "midCost": "1159200",
+  "midLabel": "1.16 USDC",
+  "allInBps": 27,
+  "effectiveRate": "1.162396",
+  "oracleRate": "1.1592",
+  "exact": true,
+  "bookUsdc": "23184000",
+  "bookEurc": "20000000",
+  "payer": "0x8A48F60cE8d38af0986796F222fA3f3FDA266a14",
+  "payee": "0x006292C16137C6732f75748af18570631d3a0403",
+  "lp": "0xf42d1bD7DBE9FC9099C419070AAbB8086A3Fe4f5",
+  "steps": [
+    {
+      "label": "pool seeded",
+      "tx": "0x4602393ec99e4361870f2f3af02ba01061cf03c20942c58d1e3808ccbb2574a6",
+      "gas": "200709",
+      "detail": "23.18 USDC + EUR 20.00 at 1.1592"
+    },
+    {
+      "label": "invoice settled",
+      "tx": "0xa0fe947cc439648f461bf556d0ad6f84d85135120b16fa94877f46171e356a96",
+      "gas": "214270",
+      "detail": "EUR 1.00 delivered for 1.16 USDC"
+    }
+  ],
+  "ranAt": "2026-09-13T10:56:52.771Z"
+}
