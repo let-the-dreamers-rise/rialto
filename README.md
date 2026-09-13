@@ -10,6 +10,12 @@ actually exists, and the payee receives exactly €5,000 — not "about" €5,00
 For importers, exporters and agencies paying cross-border invoices: the businesses too small
 for a bank's FX desk.
 
+**[Arc mainnet goes live on 16 September 2026](https://www.arc.network/blog/arc-mainnet-goes-live-on-september-16-2026),
+and there is still no price oracle deployed on Arc.** Circle has announced partner
+stablecoins in eight currencies, none of which trades anywhere near 1.00, and a venue that
+cannot read a price has only one number to centre on. That is a mainnet-day problem, not a
+someday problem.
+
 **Live demo:** https://rialto-arc.netlify.app
 
 None of it is possible without reading the real FX rate on-chain, and Arc ships with no price

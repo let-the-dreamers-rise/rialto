@@ -34,6 +34,17 @@
             margin-right:7px;vertical-align:middle;animation:pulse 2s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
+  /* ---- the mainnet clock ---- */
+  .clock{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:baseline;
+         background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--a);
+         border-radius:11px;padding:14px 18px;margin:24px 0}
+  .clock .cd{font:650 15px/1.3 var(--mono);color:var(--ink);letter-spacing:-.01em}
+  .clock .cx{font-size:13.5px;color:var(--ink-2);flex:1 1 340px;min-width:0}
+  .ask{background:var(--sunk);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:26px 0}
+  .ask h3{margin:0 0 8px;font-size:16px}
+  .ask ul{margin:10px 0 0;padding-left:18px;color:var(--ink-2);font-size:14px}
+  .ask li{margin-bottom:6px}
+
   /* ---- what is live ---- */
   .status{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0 30px}
   .status>div{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 15px}
@@ -174,6 +185,14 @@
   <p class="note" style="margin-bottom:34px">Every currency pair works this way, including ones
     with no direct pool: routing through USDC means N corridors give N(N−1)/2 pairs, so a
     Brazilian importer pays a Philippine peso invoice without a BRL/PHP pool existing.</p>
+
+  <div class="clock">
+    <span class="cd" id="cd">Arc mainnet: 16 September 2026</span>
+    <span class="cx">Circle has announced partner stablecoins in BRL, MXN, PHP, ZAR, JPY, KRW,
+      CAD and AUD. None of them trade near 1.00, and on mainnet day there is still no price
+      oracle deployed on Arc for a pool to read. <a href="https://www.arc.network/blog/arc-mainnet-goes-live-on-september-16-2026"
+      target="_blank" rel="noopener">Circle's announcement</a>.</span>
+  </div>
 
   <h2>Which part of the payment this is</h2>
   <p>Rialto is not a payments company and does not pretend to be one. A cross-border payment
@@ -349,6 +368,22 @@
   <p class="note">71 tests · 3 reproducible measurements · an adversarial review that found and
     fixed an unbounded oracle failure mode, and states what remains exploitable.</p>
 
+  <div class="ask">
+    <h3>What a grant buys, in order</h3>
+    <p style="margin:0">Everything above runs on a book seeded from a single faucet drip. The
+      design is not the constraint; depth and independence are.</p>
+    <ul>
+      <li><b>A second corridor</b>, so the router settles a live multi-hop trade — the one
+        path here that has not run on-chain.</li>
+      <li><b>Independent publishers.</b> A quorum of one reading one source is a trusted feed
+        with extra steps, and it stays one until somebody else is signing.</li>
+      <li><b>An intraday source</b>, so the feed stops being a daily reference rate held
+        inside a fifteen-minute bound.</li>
+      <li><b>Inventory</b>, because 2bp of slippage on a EUR 20 book is not the number that
+        matters — the number that matters is what a EUR 500,000 invoice costs.</li>
+    </ul>
+  </div>
+
   <footer>
     <p>Source: <a href="https://github.com/let-the-dreamers-rise/rialto">github.com/let-the-dreamers-rise/rialto</a> ·
        every figure reproducible with <code>npm run corridors</code> ·
@@ -473,6 +508,21 @@ function renderStatus(s) {
 }
 
 const SCAN = 'https://testnet.arcscan.app'
+
+/* ── the mainnet clock, computed so the page does not go stale on the 16th ── */
+;(() => {
+  const LAUNCH = Date.UTC(2026, 8, 16)          // 16 September 2026
+  const today = new Date()
+  const now = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
+  const days = Math.round((LAUNCH - now) / 86400000)
+  const el = $('#cd')
+  if (!el) return
+  el.textContent =
+    days > 1 ? `Arc mainnet launches in ${days} days — 16 September 2026`
+    : days === 1 ? 'Arc mainnet launches tomorrow — 16 September 2026'
+    : days === 0 ? 'Arc mainnet launches today — 16 September 2026'
+    : `Arc mainnet has been live since 16 September 2026`
+})()
 
 /* ── what the feed costs to keep alive ── */
 async function renderPublish() {

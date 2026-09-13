@@ -18,6 +18,14 @@ Items marked ⚠ need a decision or a fact only the founders can supply.
 **One line.** The FX layer for Circle's partner stablecoins on Arc — plus the price oracle
 Arc is missing, without which none of it is possible.
 
+**Why now, specifically.** [Arc mainnet goes live on 16 September 2026](https://www.arc.network/blog/arc-mainnet-goes-live-on-september-16-2026).
+On that date there is still no price oracle deployed on Arc, and therefore no way for any
+venue on it to know what a currency is worth. This is not a problem that arrives later with
+scale; it arrives on day one, with the first partner stablecoin pool that tries to quote a
+price and centres itself on 1.00 because that is the only number available to it. We have
+the oracle deployed and source-verified on testnet now, carrying a live feed, with a pool
+and a settled invoice on top of it.
+
 **Problem, and why it matters.** Circle has announced partner stablecoins in BRL, MXN, PHP,
 ZAR, JPY, KRW, CAD and AUD. Those currencies trade at roughly 5, 17, 57, 16, 150, 1400, 1.4
 and 1.5 to the dollar.
