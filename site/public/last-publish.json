@@ -3,12 +3,12 @@
   "pair": "EUR/USD",
   "rate": "1.1592",
   "ecbDate": "2026-09-11",
-  "tx": "0xf75288505043478688c5e6f3ea318fafad1d9e61c8964b26e3b11f63d55b40a6",
+  "tx": "0x6ebf017ec7357164982fa381766dcdea86ee404218333c9b2b1907c644ec8665",
   "gas": "42405",
   "costUsdc": "0.000890505",
-  "block": "61888303",
+  "block": "61888868",
   "publisher": "0xf42d1bD7DBE9FC9099C419070AAbB8086A3Fe4f5",
   "explorer": "https://testnet.arcscan.app",
-  "postedAt": "2026-09-13T11:03:17.577Z",
+  "postedAt": "2026-09-13T11:08:10.719Z",
   "source": "European Central Bank daily reference rates"
 }

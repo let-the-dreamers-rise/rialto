@@ -118,6 +118,47 @@ Wise does the part we don't.
 
 ---
 
+## 6. What the live deployment adds, and what it exposes
+
+*Added 13 September 2026, after the stack went onto Arc testnet and settled real trades.*
+
+Everything above was measured in simulation against a $2.3M book. The deployment is
+three orders of magnitude smaller and that changes which claims are supported.
+
+**What is now demonstrated rather than argued.**
+
+| Claim | Evidence |
+|---|---|
+| The oracle works on Arc | Live EUR/USD feed, updated from ECB, `getRate` reverting past the caller's bound |
+| Exact-output settlement works | `INV-2026-114`: payee received exactly EUR 1.00, three separate addresses |
+| The fee split is real | 0.001253 EURC in `protocolFees1` — 12.53bp, on-chain, from that invoice |
+| Rate-anchoring holds at small size | 2bp of slippage on a trade worth 5% of the book |
+| Forwards settle against the feed | Position #0 opened, filled, settled; collateral accounting balanced |
+
+**What the deployment does not demonstrate, stated so nobody has to discover it.**
+
+- **The router has never routed.** Multi-hop needs a second seeded corridor and testnet EURC
+  is metered at 20 per request. Deployed, verified, ten tests, zero live trades.
+- **The book is EUR 19.** Every cost number from the live pool is a small-size number. The
+  invoice-size analysis in §2 is simulation, and it is the honest source for what this costs
+  at a size a business would care about.
+- **The publisher set is still one key.** §1's residual risk is not theoretical here: the
+  deployer is the sole publisher, the oracle admin, the pool treasury and the LP. On this
+  deployment that one key can do everything §1 warns about.
+- **The feed is a daily reference rate held inside a 15-minute bound.** The publisher
+  re-attests the same ECB print every ten minutes to keep it fresh. The value is real; the
+  implied observation frequency is not. An intraday source is what makes the quorum mean
+  anything, because a quorum of one reading one daily number is a trusted feed with extra
+  steps.
+
+**A new operational risk that has nothing to do with the contracts.** The deployer key lives
+on one ephemeral machine. If it is lost, the oracle can never be updated again — admin and
+the only publisher are the same key — and the feed freezes permanently. Every contract
+above keeps working exactly as designed while the product dies. Custody of that key is
+currently the single largest threat to this deployment, ahead of anything in §1.
+
+---
+
 ## Verdict
 
 The engine is sound and now has a bounded failure mode where it previously had an unbounded
@@ -126,3 +167,9 @@ one. The measured LP return (+2.32%/yr) is real, and the arbitrage advantage ove
 
 The two things that decide whether it matters are neither of those, and neither is code:
 **a real publisher set**, and **businesses with invoices who already hold USDC**.
+
+Since that was written the stack has gone live on Arc testnet and settled both an invoice
+and a forward, which moves the engine from argued to demonstrated. It does not move either
+of those two things at all. A third has joined them, and it is more urgent than either:
+**the deployer key is a single point of failure with no backup**, and it is the same key
+that is the oracle's sole publisher and admin. See §6.

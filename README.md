@@ -279,8 +279,11 @@ trade at roughly 5, 17, 150, 18 and 56 to the dollar. A 1:1 stableswap cannot ho
 all. A rate-scaled one treats them exactly like EUR.
 
 **Revenue.** The swap fee splits between LPs and a protocol treasury, capped in the code at
-half. At 4bp with a 50% share, the protocol earns 2bp of every unit of volume routed. The
-split never changes the trader's price — it is taken out of the fee, not added to it.
+half, and collectable only to the treasury address. At the 25bp this charges, a 50% share is
+**12.5bp of every unit of volume routed** — 1,250 USDC per million settled. The split never
+changes the trader's price; it comes out of the fee, not on top of it. The settled invoice
+above paid the protocol 0.001253 EURC, which is 12.53bp and is readable on the pool right now
+as `protocolFees1`.
 
 **Safety.** Proportional withdrawal deliberately does not consult the oracle. If the feed
 stalls, swapping halts but every LP can still take their share of the reserves out. A design

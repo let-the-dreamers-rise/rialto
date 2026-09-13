@@ -98,15 +98,7 @@ writeFileSync(out, JSON.stringify({
 }, null, 2))
 console.log(`\nwrote ${out}`)
 
-// The demo page reads this to show live addresses instead of "awaiting gas", so funding
-// the deployer and redeploying the page is all it takes to make the site show real
-// contracts rather than a promise.
-if (target !== 'local') {
-  const webOut = join(ROOT, 'apps/web/public/deployment.json')
-  writeFileSync(webOut, JSON.stringify({
-    network: target, chainId: chain.id, oracle, pool, rateSource, usdc, eurc,
-    pair: 'EUR/USD', explorer: chain.blockExplorers?.default.url ?? null,
-    deployedAt: new Date().toISOString(),
-  }, null, 2))
-  console.log(`wrote ${webOut}  (the demo page will show these addresses)`)
-}
+// The demo page does not read a file for its addresses: it reads the chain on every
+// request, so a deployment it does not know about shows up as soon as it is deployed and a
+// stale file can never disagree with reality. Addresses live in deployments/<network>.json
+// for the scripts, and nowhere else.

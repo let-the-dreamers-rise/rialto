@@ -202,7 +202,7 @@ const out = {
 if (target === 'local') {
   console.log('\nlocal rehearsal: not writing the demo page files')
 } else {
-  for (const p of ['apps/web/public/live-forward.json', 'site/public/live-forward.json']) {
+  for (const p of ['site/public/live-forward.json']) {
     writeFileSync(join(ROOT, p), JSON.stringify(out, null, 2))
     console.log(`\nwrote ${p}`)
   }

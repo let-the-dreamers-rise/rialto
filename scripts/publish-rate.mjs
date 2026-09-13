@@ -125,7 +125,7 @@ if (target !== 'local') {
     postedAt: new Date().toISOString(),
     source: 'European Central Bank daily reference rates',
   }
-  for (const f of ['apps/web/public/last-publish.json', 'site/public/last-publish.json']) {
+  for (const f of ['site/public/last-publish.json']) {
     writeFileSync(join(ROOT, f), JSON.stringify(record, null, 2))
     console.log(`wrote      ${f}`)
   }
