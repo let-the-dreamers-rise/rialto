@@ -59,7 +59,8 @@ The reason is specific and a reviewer can check it in thirty seconds: **Arc ship
 price oracle.** You cannot centre a pool on a rate you cannot read, so every venue anchors
 at 1.00, so the category looks fine until somebody measures a year of it.
 
-**Solution.** Three pieces, all built and tested.
+**Solution.** Five contracts, all deployed, verified and exercised on Arc testnet. Three
+carry the argument:
 
 1. **RialtoOracle** — a pull-based FX feed for Arc. Publishers sign observations off-chain;
    whoever needs a rate carries it in with the transaction that uses it, and the contract
@@ -72,7 +73,12 @@ at 1.00, so the category looks fine until somebody measures a year of it.
    carry its reference on-chain for reconciliation. None of those is a swap, which is why
    `swapExactOut` and a settlement contract had to exist.
 
-**Priced as an FX provider, not a DEX.** 25bp all-in — about half of Wise, an order of
+The other two are what a business actually buys: **RialtoRouter**, multi-hop exact-output
+settlement so N corridors give N(N−1)/2 pairs, and **RialtoForward**, a collateralised rate
+lock for invoices with terms — because over thirty days a currency moves more than any fee.
+
+**Priced as an FX provider, not a DEX.** A 25bp fee — 27bp all-in on the live book, the
+extra 2bp being slippage on a EUR 20 pool — about half of Wise, an order of
 magnitude under a bank. The 4bp a stableswap would charge leaves most of the spread on the
 table and pays liquidity too little to turn up: at 4bp the same simulation returns LPs
 +0.41%, below a Treasury bill. Pricing is what makes the venue exist.
@@ -158,8 +164,9 @@ institution quoting RFQ can hedge into the pool.
 
 The swap fee splits between LPs and a protocol treasury, capped **in code** at half, and the
 split never changes the payer's price because it comes out of the fee rather than on top of
-it. Measured over the 259-day run: **13.4bp of routed volume to the protocol**, with LPs
-taking the rest.
+it. **12.5bp of every swap by construction** — half of 25bp — and 13.4bp of routed volume
+over the 259-day simulation. The settled invoice on testnet paid 12.53bp into the pool's
+`protocolFees1`, where anyone can read it.
 
 | Daily settled volume | Annual protocol revenue |
 |---|---|
@@ -206,19 +213,22 @@ What exists:
 - `REVIEW.md`: an adversarial review that found and fixed an unbounded oracle failure mode
   — a compromised publisher set could take 37.8% of a pool's book in one print, now bounded
   at ~3.2% — and measured what remains exploitable.
-- **Six contracts deployed and source-verified on Arc testnet**, plus a forward opened,
-  filled and settled on-chain against the live oracle — not a testnet deployment that merely
-  exists, but one carrying a completed instrument a reviewer can audit transaction by
+- **Six contracts deployed and source-verified on Arc testnet**, carrying a settled invoice
+  (`INV-2026-114`, payee received exactly EUR 1.00, 27bp all-in, three separate addresses)
+  and a settled forward (EUR 1,000 locked at 1.1622, settled at 1.1652, 3.00 USDC paid) —
+  not a testnet deployment that merely exists, but one a reviewer can audit transaction by
   transaction.
 
 **Demo video.** Recorded from the live page by `npm run video` — a scripted Playwright
 walkthrough with the real transactions, the 60-second oracle bound reverting on camera and
 the 15-minute one succeeding, captions burned in, offline-synthesised narration. Two cuts:
 1:50 silent-with-captions and 2:38 narrated. Both reproducible from the repository;
-`scripts/narrate/README.md` has the voice pipeline. ⚠ Host the chosen cut (Descript project
-is uploaded and ready to publish, or YouTube unlisted) and paste the link here.
+`scripts/narrate/README.md` has the voice pipeline.
 
-⚠ Before submitting: the video link above, the legal entity, and founder bios.
+**Video:** https://rialto-arc.netlify.app/rialto-demo.mp4 (narrated cut, hosted with the
+demo; also embedded at the foot of the page).
+
+⚠ Before submitting: the legal entity and founder bios.
 
 ## Where this sits next to what is already on Arc
 
@@ -258,7 +268,7 @@ side effect of shipping a pool.
 
 | # | Deliverable | Metric | Weeks | USDC |
 |---|---|---|---|---|
-| 1 | Oracle + USDC/EURC live on **Arc mainnet in launch week**; publisher set at 2-of-3; invoice settlement page; demo video | Verified addresses on Arcscan; 14 days continuous publishing; 100 settled invoices | 4 | 20,000 |
+| 1 | Oracle + USDC/EURC live on **Arc mainnet in launch week**; publisher set at 2-of-3 on an intraday source; a settlement front end a business can use without a terminal | Verified mainnet addresses on Arcscan; 14 days continuous publishing inside the 15-minute bound; 100 settled invoices | 4 | 20,000 |
 | 2 | Corridors for every Circle partner stablecoin that has shipped — BRL, MXN, PHP, ZAR first; oracle publishing all pairs; settlement API and SDK | ≥4 corridors live; **$500k settled volume**; ≥3 external publishers | 10 | 25,000 |
 | 3 | Oracle hardened and documented as public infrastructure: independent publisher set, feed for any pair on request, integration guide | ≥2 external protocols reading the feed; ≥8 pairs published; third-party security review published | 16 | 25,000 |
 | 4 | Depth where it matters: LP programme, routing so payment apps settle through it, published corridor economics | **$5M settled volume**; ≥25 paying businesses; ≥2 payment apps integrated | 24 | 30,000 |
@@ -293,8 +303,9 @@ project. That converts Circle's partner deals from announcements into working li
 ⚠ **Founders, bios, entity and location to be completed.** What the record supports: the
 technical lead has shipped a production multi-tenant application with webhook-driven billing
 and tenant isolation, and this codebase — stableswap math with Newton iteration, EIP-712
-signature verification, an oracle with quorum and circuit breaker, 33 tests, and a
-259-day backtest on real central-bank data — was built to a working, measured state.
+signature verification, an oracle with quorum and circuit breaker, 71 tests, a 259-day
+backtest on real central-bank data, and a live testnet deployment that has settled both an
+invoice and a forward — was built to a working, measured state.
 
 ⚠ **Decide before submitting:** legal entity and where incorporated; whether both founders
 are full-time (Cohort 1 asked, and it correlates with selection); Circle Developer Console
@@ -311,8 +322,12 @@ this satisfies by construction.
 
 **A one-publisher oracle is a trusted oracle.** The contract supports M-of-N and the deploy
 script takes a publisher list, but a first deployment at quorum 1 means the deployer can set
-the rate, and therefore the price the pool trades at. This is the main open risk and it is
-the substance of milestone 2. It is a coordination problem, not a code problem.
+the rate, and therefore the price the pool trades at. On the testnet deployment that one key
+is also the oracle admin, the pool treasury and the sole LP. This is the main open risk;
+milestone 1 takes it to 2-of-3 and milestone 3 to an independent set. It is a coordination
+problem, not a code problem. A related one: the current feed is the ECB's daily reference
+rate re-attested every ten minutes to stay inside the pool's bound — a real value with an
+implied frequency it does not have. Milestone 1 replaces it with an intraday source.
 
 **Liquidity is the cold start.** The design does not create depth; it stops depth from
 leaking. Bootstrapping is the team's own inventory plus whoever the measured +2.32% attracts.
@@ -337,23 +352,26 @@ doing it wrong; it is that the primitive all three of us need does not exist yet
 built it. If they adopt the oracle, that is the grant working.
 
 **A pool is only as good as its worst day.** The circuit breaker bounds a single bad
-attestation to a 10% move while the previous one is fresh, and proportional withdrawal never
-consults the oracle, so a dead feed stops trading rather than trapping LPs. Neither of those
-makes a compromised publisher set harmless.
+attestation to a 10% move while the previous one is fresh, widening with staleness to a hard
+25% ceiling it never exceeds, and proportional withdrawal never consults the oracle, so a
+dead feed stops trading rather than trapping LPs. Neither of those makes a compromised
+publisher set harmless: `REVIEW.md` measures ~3.6% of the book as extractable in one print.
 
 ---
 
 ## Positioning notes for the founders
 
-Cohort 1 disbursed $5K–$25K per team (median $10K), so $20K over three milestones is inside
-the believable band; the $100K headline is not. The open cohort is running at roughly 1–3%
-acceptance (8 of 677 at the time of research).
+Cohort 1 disbursed $5K–$25K per team (median $10K). The ask is the programme maximum and the
+note at the top says why; if a reviewer pushes back on size, milestone 1 alone is $20K,
+inside that band, and is a coherent deliverable on its own. The open cohort was running at
+roughly 1–3% acceptance (8 of 677 at the time of research).
 
 The two things that most move an application are a **verified contract address on Arc** and
-a **demonstration**. Here the demonstration is unusual and worth leading with: not a video of
-a UI, but a reproducible backtest on central-bank data showing the incumbent design losing
-4.3% of LP capital a year. Very few applications contain a number that someone else can
-check.
+a **demonstration**. Both are now in hand, and the demonstration is two things at once: a
+reproducible backtest on central-bank data showing the incumbent design losing a third of LP
+capital a year on the corridors that matter, and a testnet deployment where a reviewer can
+open the transaction that paid a payee exactly what they were billed. Very few applications
+contain a number that someone else can check; fewer contain a hash.
 
 Lead with the oracle gap, not the pool. "Arc has no price feed" is a fact a reviewer can
-verify in thirty seconds, and it makes the rest follow.
+verify in thirty seconds — and from 16 September it is a fact about mainnet.

@@ -186,6 +186,9 @@
     with no direct pool: routing through USDC means N corridors give N(N−1)/2 pairs, so a
     Brazilian importer pays a Philippine peso invoice without a BRL/PHP pool existing.</p>
 
+  <p class="note" style="margin:-4px 0 18px"><a href="#walkthrough">▶ Watch the two-minute
+    walkthrough</a> — every transaction in it is on Arcscan.</p>
+
   <div class="clock">
     <span class="cd" id="cd">Arc mainnet: 16 September 2026</span>
     <span class="cx">Circle has announced partner stablecoins in BRL, MXN, PHP, ZAR, JPY, KRW,
@@ -367,6 +370,18 @@
     metered at 20 per request. It is the first thing a grant would buy.</p>
   <p class="note">71 tests · 3 reproducible measurements · an adversarial review that found and
     fixed an unbounded oracle failure mode, and states what remains exploitable.</p>
+
+  <h2 id="walkthrough">The two-minute walkthrough</h2>
+  <p>Recorded from this page by a script, so it can be re-made whenever the chain state
+    changes. The sixty-second oracle bound reverts on camera because the feed genuinely was
+    older than sixty seconds when it was recorded.</p>
+  <video controls preload="metadata" playsinline poster="/rialto-demo-poster.jpg"
+    style="width:100%;max-width:100%;border-radius:12px;border:1px solid var(--line);background:#0b0b0b;display:block;margin:14px 0 8px">
+    <source src="/rialto-demo.mp4" type="video/mp4">
+    Your browser does not play MP4; <a href="/rialto-demo.mp4">download it</a>.
+  </video>
+  <p class="note">2:38, narrated. <a href="/rialto-demo.mp4" download>Download</a> ·
+    reproduce with <code>npm run video</code>.</p>
 
   <div class="ask">
     <h3>What a grant buys, in order</h3>
