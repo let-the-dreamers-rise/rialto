@@ -438,6 +438,7 @@ async function refresh() {
     $('#src').textContent = `read at block ${fmt(Number(s.block.number))}`
     renderCards(s)
     renderStatus(s)
+    renderPublish()
     // The status strip above carries the pool caveat; the footer records when the page last
     // actually reached the chain, so a stale render is visible rather than silent.
     $('#pool-note').textContent =
@@ -542,7 +543,8 @@ const SCAN = 'https://testnet.arcscan.app'
 /* ── what the feed costs to keep alive ── */
 async function renderPublish() {
   try {
-    const r = await fetch('/last-publish.json').then(x => x.json())
+    // The scheduler's own record when it has one; the manual script's file otherwise.
+    const r = (state && state.lastPublish) || await fetch('/last-publish.json').then(x => x.json())
     const cost = Number(r.costUsdc)
     $('#upd').innerHTML = `<a href="${SCAN}/tx/${r.tx}" target="_blank" rel="noopener"
       >${cost.toFixed(5)} USDC</a>`

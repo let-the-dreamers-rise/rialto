@@ -3,6 +3,7 @@
 // Decoded server-side rather than shipping an ABI to the browser: the page stays small, and
 // there is no cached copy that can drift from what is actually on Arc.
 import { createPublicClient, http, keccak256, stringToBytes } from 'viem'
+import { getStore } from '@netlify/blobs'
 
 const RPC = Netlify.env.get('ARC_RPC_URL') ?? 'https://rpc.testnet.arc.io'
 const D = {
@@ -67,6 +68,10 @@ export default async () => {
       maxRateAge = await client.readContract({ address: D.rateSource, abi: SOURCE, functionName: 'maxAge' })
     } catch { /* reported as unknown rather than guessed */ }
 
+    // What the scheduler last did, from its own record. Absent until it has posted once.
+    let lastPublish = null
+    try { lastPublish = await getStore({ name: 'publisher', consistency: 'strong' }).get('last', { type: 'json' }) } catch {}
+
     let forward = null
     try {
       const count = await client.readContract({ address: D.forward, abi: FORWARD, functionName: 'offers' })
@@ -86,7 +91,7 @@ export default async () => {
       oracle: { rate: feed.rate, observedAt: feed.observedAt, postedAt: feed.postedAt,
                 ageSeconds: Number(block.timestamp) - Number(feed.observedAt),
                 quorum, devFreshBps: devFresh, devCeilingBps: devCeiling, maxRateAge },
-      pool, forward, asOf: new Date().toISOString(),
+      pool, forward, lastPublish, asOf: new Date().toISOString(),
     }), { headers })
   } catch (e) {
     return new Response(j({ error: 'read failed', detail: String(e?.shortMessage ?? e?.message ?? e) }),

@@ -10,6 +10,7 @@
 // address at /api/publisher and someone sends it gas.
 import { createWalletClient, createPublicClient, http, formatUnits, keccak256, stringToBytes, parseUnits } from 'viem'
 import { publisherAccount } from './publisher.mjs'
+import { getStore } from '@netlify/blobs'
 
 const RPC = Netlify.env.get('ARC_RPC_URL') ?? 'https://rpc.testnet.arc.io'
 const ORACLE_ADDRESS = '0x391c05393778eae959cf16296e308d5538c5754f'
@@ -84,8 +85,12 @@ export default async () => {
     const after = await pub.getBalance({ address: account.address })
     if (r.status !== 'success') return j({ error: 'submit reverted', tx: hash }, 502)
 
-    return j({ posted: obs.rate, ecbDate: obs.date, tx: hash,
-               gas: r.gasUsed, costUsdc: formatUnits(before - after, 18) })
+    const record = { rate: obs.rate, ecbDate: obs.date, tx: hash, gas: String(r.gasUsed),
+                     costUsdc: formatUnits(before - after, 18), publisher: account.address,
+                     postedAt: new Date().toISOString(), source: 'scheduled' }
+    // Best effort: a failed record must not turn a successful post into a reported failure.
+    try { await getStore({ name: 'publisher', consistency: 'strong' }).setJSON('last', record) } catch {}
+    return j(record)
   } catch (e) {
     return j({ error: 'publish failed', detail: String(e?.shortMessage ?? e?.message ?? e) }, 502)
   }
