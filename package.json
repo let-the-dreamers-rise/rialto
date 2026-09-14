@@ -20,7 +20,8 @@
     "instruments": "node scripts/deploy-instruments.mjs arc-testnet",
     "publish": "node scripts/publish-rate.mjs",
     "invoice": "node scripts/live-invoice.mjs arc-testnet",
-    "invoice:dry": "bash scripts/dry-run-invoice.sh"
+    "invoice:dry": "bash scripts/dry-run-invoice.sh",
+    "video": "bash scripts/render-video.sh"
   },
   "keywords": [],
   "author": "",
