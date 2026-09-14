@@ -19,7 +19,10 @@ someday problem.
 **Live demo:** https://rialto-arc.netlify.app
 
 Built by **Ashwin Goyal**, a student in India, working alone: nine days from the first line
-of Solidity to a verified deployment with a settled invoice on it.
+of Solidity to a verified deployment with a settled invoice on it. Previously Germline on 0G
+mainnet, a differential test suite that found two gaps in a Bitcoin reference implementation,
+and shipped work on USDC/CCTP and Circle Developer Controlled Wallets —
+[github.com/let-the-dreamers-rise](https://github.com/let-the-dreamers-rise).
 
 None of it is possible without reading the real FX rate on-chain, and Arc ships with no price
 oracle. So that came first. The whole stack is now deployed and source-verified on Arc testnet:

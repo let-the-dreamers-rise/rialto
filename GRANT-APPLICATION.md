@@ -150,8 +150,8 @@ is the first thing this grant buys.
 | EURC | The first pair | Live on Arc testnet, verified on-chain |
 | Arc | Settlement, and the oracle's home | Testnet; mainnet 16 Sep 2026 |
 | Partner stablecoins | Pairs 2..n — the whole point of rate-scaling | As they land |
-| CCTP v2 / Gateway | Routing inventory to the pool from other chains | Arc testnet |
-| Circle Wallets | LP and publisher key management | Arc testnet |
+| CCTP v2 / Gateway | Routing inventory to the pool from other chains | Planned, milestone 2 — founder shipped USDC/CCTP in proofflow |
+| Circle Wallets | LP and publisher key management, replacing the site-held key | Planned, milestone 4 — founder shipped Circle Developer Controlled Wallets before |
 
 **StableFX.** Circle's own FX escrow is on Arc (`0xd682…2E10`) but is RFQ, gated to KYB'd
 institutions. Rialto is the permissionless layer beneath that gate: the same pair, for
@@ -368,27 +368,47 @@ project. That converts Circle's partner deals from announcements into working li
 
 ## Team
 
-**Ashwin Goyal** — solo technical founder. Individual, India. A student, and full-time on
-Rialto: it has been full-time work for the nine days it has existed, and the grant is what
-keeps it full-time through the twenty-four weeks of the milestones rather than something
-done around a timetable.
+**Ashwin Goyal** (he/him) — founder, solo, technical. Individual; India; a student; full-time
+on Rialto — it has been full-time work for the nine days it has existed, and the grant keeps
+it that way through the milestones. GitHub: github.com/let-the-dreamers-rise — 123
+repositories, 901 contributions in the last year.
 
-What the record supports, and it is the whole case for execution: Rialto was designed,
-built, tested, reviewed, deployed and demonstrated by one person in nine days. 1,584 lines
-of Solidity across six contracts. 1,116 lines of tests, 71 passing. An oracle with EIP-712
-quorum verification and a bounded circuit breaker; a stableswap on rate-scaled balances
-solved by Newton iteration; exact-output settlement, multi-hop routing and collateralised
-forwards. A 259-day backtest on ECB data across six corridors. An adversarial review that
-found and fixed a failure mode worth 37.8% of a pool's book. Source-verified deployment on
-Arc testnet, with a settled invoice and a settled forward on it. A reproducible demo video.
-Before Rialto: Drape, a multi-tenant storefront with subscription billing, payment webhooks
-and tenant-isolation rules, built for an XPRIZE submission — and the postmortem on why it
-had no users, written before this project started. Its first finding was "built for a
-judge, not a shop", and it is the reason Rialto was built the other way round: measure
+**About me, honestly.** I am not a career cryptographer and I have never shipped a production
+zero-knowledge circuit. What I do repeatedly is build systems where a stranger can re-derive
+the claim instead of trusting me, and then attack them myself. Rialto is that pattern
+applied to FX: every number in this application regenerates from one command, every
+transaction is on Arcscan, and `REVIEW.md` is me attacking my own oracle until I found the
+hole worth 37.8% of a pool's book and bounded it.
+
+**What I have shipped before, and what a reviewer can click.**
+
+- **Germline** — verifiable AI-configuration tuning, live on **0G mainnet**; every step is
+  recorded on-chain so the result survives an audit.
+- **p2mr-assurance-lab** — independent conformance testing for BIP 360, Bitcoin's
+  post-quantum output proposal: a from-scratch implementation cross-checked against the
+  official reference on 13 official vectors and 2,000 random trees, which found four graded
+  divergences, **two of them real gaps in the reference implementation**, plus the first
+  open measurement of what post-quantum signatures cost inside a Bitcoin transaction.
+- **rein** — a smart account an autonomous agent can operate and cannot drain; verified
+  source on Base Sepolia and Whitechain Sepolia; a fully compromised agent tried six ways to
+  empty it and lost nothing. 46 tests.
+- **proofflow** — private revenue-based credit for emerging-market SMBs on Solana, built on
+  **USDC and CCTP**, Arcium MPC and the Solana Attestation Service. Live at proofflow.xyz.
+- **economic-immune-system** — an agent that authorises or rejects transactions against a
+  budget policy, built on **Circle Developer Controlled Wallets**.
+- **nyaya** — a world-model benchmark with cost as a scored column: 249 tests, every table
+  rebuilt by CI on every push, and the losing rows published.
+
+So the Circle products marked *planned* below are not new to me — I have integrated
+USDC/CCTP and Circle Developer Controlled Wallets in shipped work. What is new is Arc, and
+the primitive Arc is missing.
+
+Before all of that: Drape, a storefront built for an XPRIZE submission, and its postmortem —
+"built for a judge, not a shop" — which is why Rialto was built the other way round: measure
 first, on real data, and build only what the measurement says.
 
-No co-founder, no network, no customers. That is said in the Distribution section rather
-than hidden in this one, together with the plan that does not need them.
+No co-founder, no payments-industry relationships, no customers. That is said in full in the
+Distribution section, together with the plan that does not need them.
 
 **Form fields.** Legal entity: *Individual* (incorporating on award if the programme
 requires an entity to receive funds). Full-time: *yes*. GitHub:

@@ -152,8 +152,18 @@ dark('Pay a foreign invoice\nin one transaction.', 'RIALTO · CIRCLE DEVELOPER G
   T(s, 0.6, 5.0, 8.8, 0.4, { text: 'Milestone 1 alone is a coherent deliverable. Milestone 3 is the one worth arguing for: every lending market, perp and prediction market on Arc needs a feed, and none exists.', fontSize: 11, color: MUTE, valign: 'top' }) }
 
 // 11 · team
-{ const s = dark('Ashwin Goyal.\nOne person, nine days.', 'TEAM · INDIVIDUAL · INDIA · STUDENT · FULL-TIME',
-  '1,584 lines of Solidity across six contracts. 71 passing tests. A 259-day backtest on ECB data. An adversarial review that found and fixed a failure mode worth 37.8% of a pool\'s book. Source-verified deployment, a settled invoice, a settled forward, a reproducible demo video.\n\nBefore this: Drape, a storefront built for an XPRIZE submission, and its postmortem — "built for a judge, not a shop". Rialto was built the other way round: measure first.',
-  'rialto-arc.netlify.app  ·  github.com/let-the-dreamers-rise/rialto') }
+{ const s = dark('I build systems a stranger\ncan re-derive. Then I attack them.', 'TEAM · ASHWIN GOYAL · INDIVIDUAL · INDIA · STUDENT · FULL-TIME')
+  const cells = [
+    ['Germline', 'Verifiable AI-configuration tuning, live on 0G mainnet — every step recorded on-chain.'],
+    ['BIP 360 conformance', 'From-scratch implementation vs the official reference: 13 vectors, 2,000 random trees, two real gaps found in the reference.'],
+    ['USDC/CCTP · Circle Wallets', 'Already shipped: proofflow (USDC, CCTP, Arcium MPC, live) and an agent on Circle Developer Controlled Wallets.'],
+    ['Rialto, nine days', 'Six verified contracts, 71 tests, a 259-day backtest, an adversarial review, a settled invoice and forward, a demo video.'],
+  ]
+  cells.forEach(([b, l], i) => {
+    const x = 0.7 + (i % 2) * 4.45, y = 3.05 + Math.floor(i / 2) * 1.0
+    T(s, x, y, 4.2, 0.42, { text: b, fontSize: 17, bold: true, color: 'FFFFFF', fontFace: FH })
+    T(s, x, y + 0.42, 4.2, 0.55, { text: l, fontSize: 10.5, color: '8D8B82', valign: 'top' })
+  })
+  T(s, 0.7, 5.0, 8.6, 0.35, { text: 'github.com/let-the-dreamers-rise · 123 repositories · 901 contributions in the last year · rialto-arc.netlify.app', fontSize: 10.5, color: '8D8B82', fontFace: 'Courier New' }) }
 
 pres.writeFile({ fileName: 'rialto-deck.pptx' }).then((f) => console.log('wrote', f))
