@@ -71,6 +71,8 @@ const ctx = await browser.newContext({
   colorScheme: 'light',
 })
 const page = await ctx.newPage()
+const T0 = Date.now()                 // the video starts with the page
+const cues = []
 
 // The overlay: a caption bar, a cursor, and a highlight ring. Installed on every document
 // so it survives the navigations between cards and the page.
@@ -128,8 +130,13 @@ await page.addInitScript(() => {
 })
 
 /* ── scene helpers ── */
-const hold = (ms) => page.waitForTimeout(ms)
-const say = (html) => page.evaluate((h) => window.__cap(h), html)
+// PACE stretches every hold: 1 is the read-along cut, ~1.5 gives a voiceover room to breathe.
+const PACE = Number(process.env.PACE ?? 1)
+const hold = (ms) => page.waitForTimeout(Math.round(ms * PACE))
+const say = (html) => {
+  cues.push({ at: Number(((Date.now() - T0) / 1000).toFixed(2)), text: html.replace(/<[^>]+>/g, '') })
+  return page.evaluate((h) => window.__cap(h), html)
+}
 const hush = () => page.evaluate(() => window.__cap(''))
 const tag = (on) => page.evaluate((v) => { document.getElementById('__tag').style.display = v ? '' : 'none' }, on)
 async function goTo(sel, offset = 72, ms = 800) {
@@ -256,8 +263,11 @@ await tag(false)
 await hold(5200)
 
 const video = page.video()
+const total = Number(((Date.now() - T0) / 1000).toFixed(2))
 await ctx.close()
 const path = await video.path()
 await browser.close()
 srv.close()
+await writeFile(join(OUT, 'cues.json'), JSON.stringify({ pace: PACE, total, cues }, null, 2))
 console.log(`recorded ${path}`)
+console.log(`cues     ${join(OUT, 'cues.json')}  (${cues.length} captions, ${total}s)`)

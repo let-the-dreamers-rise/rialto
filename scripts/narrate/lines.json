@@ -1,0 +1,21 @@
+[
+  { "at": 0.5,   "text": "Rialto. Pay a foreign invoice in one transaction." },
+  { "at": 5.4,   "text": "Billed in euros, holding dollars: today that costs up to three hundred basis points, and days." },
+  { "at": 10.0,  "text": "One transaction. Twenty-five basis points. And the payee gets exactly what they billed." },
+  { "at": 15.4,  "text": "Arc mainnet launches in three days. There is still no price oracle on it." },
+  { "at": 21.4,  "text": "Circle's network handles getting in and out. The F X leg is the product." },
+  { "at": 27.2,  "text": "Live right now: the oracle, a settled rate lock, and a pool quoting off the feed." },
+  { "at": 33.4,  "text": "A real invoice, settled. Dollars in, euros out, one transaction." },
+  { "at": 38.4,  "text": "Exactly one euro received. Twenty-seven basis points all in." },
+  { "at": 44.4,  "text": "A rate lock: offered, taken, and settled against the oracle at maturity." },
+  { "at": 50.2,  "text": "Locked at one point one six two two, settled at one point one six five two. It paid the importer three dollars: exactly the difference." },
+  { "at": 56.6,  "text": "The piece that makes it possible: a live F X feed on Arc." },
+  { "at": 61.8,  "text": "It's pull based. You name how stale a rate you'll accept." },
+  { "at": 66.4,  "text": "Sixty seconds: reverted. That is the contract working, not failing." },
+  { "at": 74.1,  "text": "Fifteen minutes: one point one five nine two. The E C B rate, live." },
+  { "at": 79.5,  "text": "Six contracts, source verified on Arcscan." },
+  { "at": 84.9,  "text": "Twelve and a half basis points of everything settled. Not a projection: what that invoice actually paid." },
+  { "at": 91.7,  "text": "A one to one stableswap loses a third a year on emerging market corridors. Rate anchored stays flat." },
+  { "at": 98.5,  "text": "What a grant buys. And every item is a limitation this page already admits." },
+  { "at": 104.5, "text": "rialto dash arc dot netlify dot app. Mainnet is September sixteenth." }
+]

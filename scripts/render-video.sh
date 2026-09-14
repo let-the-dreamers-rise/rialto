@@ -44,11 +44,28 @@ node -e '
 ' "$SNAP"
 
 echo "==> recording"
-SNAP="$SNAP" OUT="$VID" node scripts/demo-video.mjs
+SNAP="$SNAP" OUT="$VID" PACE="${PACE:-1.5}" node scripts/demo-video.mjs
 WEBM=$(ls "$VID"/*.webm | head -1)
 
 echo "==> encoding $OUT"
 "$FFMPEG" -hide_banner -loglevel error -y -i "$WEBM" \
   -c:v libx264 -preset medium -crf 20 -pix_fmt yuv420p -movflags +faststart -r 25 "$OUT"
+
+# Narration is optional: it needs Piper and a voice model (see scripts/narrate/README.md).
+# The silent, captioned cut is complete on its own; the voiced one is laid on top of it.
+if [ -n "${NARRATE:-}" ]; then
+  echo "==> narrating"
+  LINES=$(mktemp -d)
+  OUTDIR="$LINES" VOICES="${VOICES:-.}" node scripts/narrate/synth.mjs
+  # The recorder logs a cue per caption; the title and end cards bracket them.
+  node -e '
+    const fs=require("fs"); const rec=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));
+    const endAt=Number((rec.total-5.2*rec.pace).toFixed(2));
+    fs.writeFileSync(process.argv[2], JSON.stringify({ total: rec.total,
+      cues: [{at:0.5,text:"title"}, ...rec.cues, {at:endAt,text:"end"}] }));
+  ' "$VID/cues.json" "$LINES/cues19.json"
+  FFMPEG="$FFMPEG" node scripts/narrate/assemble.mjs "$LINES/cues19.json" "$LINES" "$OUT" "${OUT%.mp4}-narrated.mp4"
+  rm -rf "$LINES"
+fi
 "$FFMPEG" -hide_banner -i "$OUT" 2>&1 | grep -E 'Duration|Stream' || true
 echo "==> done: $OUT"

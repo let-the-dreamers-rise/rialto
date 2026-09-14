@@ -211,7 +211,14 @@ What exists:
   exists, but one carrying a completed instrument a reviewer can audit transaction by
   transaction.
 
-⚠ Before submitting: a demo video, the legal entity, and founder bios.
+**Demo video.** Recorded from the live page by `npm run video` — a scripted Playwright
+walkthrough with the real transactions, the 60-second oracle bound reverting on camera and
+the 15-minute one succeeding, captions burned in, offline-synthesised narration. Two cuts:
+1:50 silent-with-captions and 2:38 narrated. Both reproducible from the repository;
+`scripts/narrate/README.md` has the voice pipeline. ⚠ Host the chosen cut (Descript project
+is uploaded and ready to publish, or YouTube unlisted) and paste the link here.
+
+⚠ Before submitting: the video link above, the legal entity, and founder bios.
 
 ## Where this sits next to what is already on Arc
 
