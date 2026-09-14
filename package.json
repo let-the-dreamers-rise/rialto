@@ -21,7 +21,8 @@
     "publish": "node scripts/publish-rate.mjs",
     "invoice": "node scripts/live-invoice.mjs arc-testnet",
     "invoice:dry": "bash scripts/dry-run-invoice.sh",
-    "video": "bash scripts/render-video.sh"
+    "video": "bash scripts/render-video.sh",
+    "authorise": "node scripts/authorise-publisher.mjs"
   },
   "keywords": [],
   "author": "",

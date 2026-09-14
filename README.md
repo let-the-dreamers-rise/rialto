@@ -107,6 +107,25 @@ Reproduce the verification with `npm run verify`.
 `npm run publish` fetches the current ECB reference rate and posts it. That is the whole
 publisher, and it is worth being precise about what it gives you.
 
+**Who holds the publisher's key.** The site posts on a schedule (every ten minutes, from
+`site/netlify/functions/publish-rate.mjs`) with a key it generated itself on first run and
+keeps in Netlify Blobs — the site's own storage. The key has never been printed, mailed or
+pasted anywhere; the only thing that leaves is the address, at
+[`/api/publisher`](https://rialto-arc.netlify.app/api/publisher), currently
+`0xA00adD79b3e315A5F3c4bC393550343fF1A7BEed`. Two things have to be true for it to post:
+the oracle admin must have authorised it, and it must hold gas.
+
+```bash
+npm run authorise -- 0xA00adD79b3e315A5F3c4bC393550343fF1A7BEed      # setPublisher + 3 USDC gas
+GAS_ONLY=1 npm run authorise -- 0xA00a…BEed                          # just top it up
+```
+
+Anyone can top it up from [faucet.circle.com](https://faucet.circle.com) (Arc, USDC) — it
+is an address, not a secret. At the measured cost that is about 0.13 USDC a day.
+
+The deployer key still holds the oracle admin role, the pool treasury and the LP position,
+and exists on one machine. `REVIEW.md` §6 is blunt about that.
+
 A pull feed is only as fresh as whoever posts to it. `getRate` reverts past the bound the
 *caller* names, so a feed nobody updates stops trades rather than settling them at
 yesterday's price — that is the safety property working, and the demo page shows the feed as

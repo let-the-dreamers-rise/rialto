@@ -1,7 +1,7 @@
 # Circle Developer Grants — Rialto
 
 Answers against the Cohort 2 Questbook form. Ask: **$100,000 USDC over four milestones.**
-Items marked ⚠ need a decision or a fact only the founders can supply.
+Items marked ⚠ need a decision or a fact only the founder can supply.
 
 > On the size of the ask, plainly: Cohort 1 disbursed $5K–$25K per team, median $10K. This
 > asks for the program maximum. The justification is not ambition, it is scope — an oracle
@@ -228,7 +228,7 @@ the 15-minute one succeeding, captions burned in, offline-synthesised narration.
 **Video:** https://rialto-arc.netlify.app/rialto-demo.mp4 (narrated cut, hosted with the
 demo; also embedded at the foot of the page).
 
-⚠ Before submitting: the legal entity and founder bios.
+⚠ Before submitting: the legal entity, full-time status, and confirming the name in the Team section.
 
 ## Where this sits next to what is already on Arc
 
@@ -263,6 +263,65 @@ So the sequencing matters more than the competition:
 If Circle funds one thing here, fund the oracle. It lifts every FX team on the chain
 including the two already in the portfolio, and it is the piece none of us can build as a
 side effect of shipping a pool.
+
+## Distribution, concretely
+
+Stated plainly, because a reviewer will ask: Rialto is built by **one technical founder, in
+India, with no corridor relationships, no payments-industry network and no customers.** For
+a company whose customers are importers reached by a sales call that would be close to
+disqualifying. For this product it is a smaller problem than it looks, and here is the plan
+that does not depend on a single relationship existing today.
+
+**Why the customer is not an importer.** The first customers of an FX primitive are other
+software. Every protocol on Arc that needs a price is a customer of the oracle. Every payment
+application that needs a non-USD leg is a customer of settlement and routing. Both are
+reached through an address, an ABI and an integration guide — things one person can produce
+and has produced. Circle's own Cohort 1 is the evidence that this is how the category gets
+funded: ViFi Labs, pre-users, in this category, at the top of the range.
+
+**Channel 1 — the two FX teams already on Arc need the oracle. Weeks 1–4.** ViFi Labs and
+Lunex are live on Arc testnet with pools that cannot read a price. Integration is one call.
+Concrete: publish `docs/integrate.md` — the call, the staleness bound, the addresses; open an
+issue on each team's public repository offering the feed; ask the Circle grant team for the
+introduction, which is the first concrete use of a grant relationship and what the programme
+exists to provide. Metric: two external protocols reading the feed (milestone 3).
+
+**Channel 2 — Circle's payment grantees are the integrators. Weeks 2–8.** Hurupay ($100M
+transacted), Blockradar ($600M processed) and Payrit (36,000 transactions) were Cohort 1.
+Each moves USDC for customers who are paid in a second currency, and each is exactly who
+calls `RialtoSettlement`. Concrete: a one-page integration offer — settle the non-USD leg
+on-chain at 25bp, exact-output, invoice reference on-chain — with the SDK call and the
+testnet sandbox that is already live, sent through the cohort channel, and cold otherwise.
+Metric: two payment applications integrated (milestone 4).
+
+**Channel 3 — launch week. Weeks 0–2.** Arc mainnet is 16 September. In the first weeks
+builders look at the ecosystem directory and Circle's developer forum for primitives, and
+being the only price feed on the chain is distribution in itself. Concrete: a listing in the
+Arc ecosystem directory, and the "Arc has no oracle" measurement published as a technical
+post with the reproducible harness attached — every number in it can be re-run, which is
+what gets a technical post passed around.
+
+**Channel 4 — the founder's own corridor, when the currency exists.** India is the largest
+recipient of cross-border service payments in the world; USD/INR is already in the corridor
+simulation, at −33% a year for a 1:1 pool. When Circle's INR partner stablecoin ships, Indian
+IT and design exporters invoicing in USD and EUR are the first direct-to-business market,
+and they are reachable online without an introduction. A currency-dependent channel, not a
+launch one, and listed as such.
+
+**The first ninety days, executable by one person.**
+
+| Weeks | Action | Evidence it happened |
+|---|---|---|
+| 0–1 | Mainnet deployment in launch week; ecosystem directory listing; integration guide | Verified mainnet addresses; the guide in the repository |
+| 1–4 | Oracle offered to ViFi and Lunex in public; introductions requested through the grant | Issues on their repositories; publisher set at 2-of-3 |
+| 2–8 | Settlement offer to the three Cohort 1 payment companies; sandbox and SDK | The offer in the repository; integration calls held |
+| 4–12 | Technical post with the harness; publisher operator agreements | ≥2 external publishers; ≥1 external reader of the feed |
+
+**What the grant changes.** Two things a solo founder cannot manufacture: introductions
+inside Circle's ecosystem, and the liquidity that makes the first integration worth an
+integrator's week. Everything else in the table is executable alone, and the repository is
+the evidence that this founder executes alone — six verified contracts, a settled invoice, a
+settled forward and a demo video, nine days, one person.
 
 ## Milestones — $100,000 USDC
 
@@ -300,16 +359,27 @@ project. That converts Circle's partner deals from announcements into working li
 
 ## Team
 
-⚠ **Founders, bios, entity and location to be completed.** What the record supports: the
-technical lead has shipped a production multi-tenant application with webhook-driven billing
-and tenant isolation, and this codebase — stableswap math with Newton iteration, EIP-712
-signature verification, an oracle with quorum and circuit breaker, 71 tests, a 259-day
-backtest on real central-bank data, and a live testnet deployment that has settled both an
-invoice and a forward — was built to a working, measured state.
+**Ashwin Goyal** — solo technical founder, India. ⚠ *(confirm the name as it should appear.)*
 
-⚠ **Decide before submitting:** legal entity and where incorporated; whether both founders
-are full-time (Cohort 1 asked, and it correlates with selection); Circle Developer Console
-email; GitHub, X, website, demo video; conflict-of-interest declaration.
+What the record supports, and it is the whole case for execution: Rialto was designed,
+built, tested, reviewed, deployed and demonstrated by one person in nine days. 1,584 lines
+of Solidity across six contracts. 1,116 lines of tests, 71 passing. An oracle with EIP-712
+quorum verification and a bounded circuit breaker; a stableswap on rate-scaled balances
+solved by Newton iteration; exact-output settlement, multi-hop routing and collateralised
+forwards. A 259-day backtest on ECB data across six corridors. An adversarial review that
+found and fixed a failure mode worth 37.8% of a pool's book. Source-verified deployment on
+Arc testnet, with a settled invoice and a settled forward on it. A reproducible demo video.
+Previously shipped a production multi-tenant application with webhook-driven billing and
+tenant isolation. ⚠ *(one line each for education and prior roles if you want them; the
+record above can also stand alone.)*
+
+No co-founder, no network, no customers. That is said in the Distribution section rather
+than hidden in this one, together with the plan that does not need them.
+
+⚠ **Decide before submitting:** legal entity and where incorporated — or "individual,
+incorporating on award" if the form allows it (⚠ check); full-time or not, in one word,
+because Cohort 1 asked and it correlates with selection; Circle Developer Console email;
+GitHub, X, website; conflict-of-interest declaration.
 
 An India-based team is fine here. Rialto performs no regulated activity: it is non-custodial
 software with no fiat leg, no on- or off-ramp, and no discretionary control of user funds.
@@ -334,11 +404,13 @@ leaking. Bootstrapping is the team's own inventory plus whoever the measured +2.
 That return is what makes the problem tractable rather than circular, but it is still the
 hardest part of the first ninety days.
 
-**Distribution is the real risk, and it is not a code problem.** Settling invoices needs
-businesses with invoices to settle. The engine being correct does not produce them. What the
-founders bring to that — an existing corridor, a trade relationship, a payments partner — is
-the part of this application a reviewer should press hardest on, and it is ⚠ for the founders
-to answer rather than something the repository can demonstrate.
+**Distribution is the real risk, and it is not a code problem.** The founder is solo and
+has no existing relationships in payments or in any corridor. The Distribution section says
+so in full and sets out the plan that does not rely on them: the first customers of an FX
+primitive are protocols and payment applications, reached through code and through the
+ecosystem access a grant provides, not importers reached by a sales call. A reviewer should
+still press here. The honest answer is that every step in that plan is executable by one
+person, and the repository is the evidence of what this one person executes alone.
 
 **We may be wrong about the measurement, and it is falsifiable on purpose.** The comparison
 runs both designs through identical trades on real ECB data and the harness is in the repo,
@@ -359,7 +431,7 @@ publisher set harmless: `REVIEW.md` measures ~3.6% of the book as extractable in
 
 ---
 
-## Positioning notes for the founders
+## Positioning notes for the founder
 
 Cohort 1 disbursed $5K–$25K per team (median $10K). The ask is the programme maximum and the
 note at the top says why; if a reviewer pushes back on size, milestone 1 alone is $20K,

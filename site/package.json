@@ -1,2 +1,9 @@
-{ "name": "rialto-site", "private": true, "type": "module",
-  "dependencies": { "viem": "^2.56.3" } }
+{
+  "name": "rialto-site",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "viem": "^2.56.3",
+    "@netlify/blobs": "^8"
+  }
+}

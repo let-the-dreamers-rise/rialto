@@ -4,10 +4,12 @@
 // only fresh while someone is at a terminal, and a reviewer who opens it on a Sunday finds a
 // stale print — which is the oracle behaving correctly and the project looking abandoned.
 //
-// Inert without a key. PUBLISHER_PK is a testnet key holding testnet USDC and nothing else;
-// if it is not set this reports that and exits, rather than failing every run.
+// The key comes from publisher.mjs: generated on first use and kept in Netlify Blobs, or
+// PUBLISHER_PK if that is set. A run with a key that is not yet authorised, or not yet
+// funded, reverts and reports it — which is the right answer until the admin authorises the
+// address at /api/publisher and someone sends it gas.
 import { createWalletClient, createPublicClient, http, formatUnits, keccak256, stringToBytes, parseUnits } from 'viem'
-import { privateKeyToAccount } from 'viem/accounts'
+import { publisherAccount } from './publisher.mjs'
 
 const RPC = Netlify.env.get('ARC_RPC_URL') ?? 'https://rpc.testnet.arc.io'
 const ORACLE_ADDRESS = '0x391c05393778eae959cf16296e308d5538c5754f'
@@ -55,11 +57,8 @@ export default async () => {
     new Response(JSON.stringify(v, (_, x) => (typeof x === 'bigint' ? x.toString() : x)),
       { status, headers: { 'content-type': 'application/json' } })
 
-  const pk = Netlify.env.get('PUBLISHER_PK')
-  if (!pk) return j({ skipped: 'PUBLISHER_PK is not set; the feed is updated by hand' })
-
   try {
-    const account = privateKeyToAccount(pk)
+    const account = await publisherAccount()
     const transport = http(RPC)
     const pub = createPublicClient({ chain, transport })
     const wallet = createWalletClient({ account, chain, transport })

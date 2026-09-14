@@ -152,10 +152,18 @@ three orders of magnitude smaller and that changes which claims are supported.
   steps.
 
 **A new operational risk that has nothing to do with the contracts.** The deployer key lives
-on one ephemeral machine. If it is lost, the oracle can never be updated again — admin and
-the only publisher are the same key — and the feed freezes permanently. Every contract
-above keeps working exactly as designed while the product dies. Custody of that key is
-currently the single largest threat to this deployment, ahead of anything in §1.
+on one ephemeral machine. If it is lost, the oracle admin is lost with it, and with it the
+ability to change the publisher set. Every contract above keeps working exactly as designed
+while the ability to steer the feed dies. Custody of that key is the single largest threat
+to this deployment, ahead of anything in §1.
+
+*Partially mitigated, 14 September.* The site now generates and holds its own publisher key
+in Netlify Blobs — never printed, never pasted — and posts with it every ten minutes once the
+admin has authorised the address at `/api/publisher`. That takes the *feed* off the ephemeral
+machine: it keeps updating whether or not that machine exists. It does not move the admin
+role, the treasury or the LP position, which remain on the deployer key. A key the site
+holds is a key the site's account controls; that is a Netlify login rather than a
+container, which is better, and it is not a hardware wallet, which would be better still.
 
 ---
 
