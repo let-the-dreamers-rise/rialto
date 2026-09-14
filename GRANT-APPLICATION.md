@@ -1,7 +1,7 @@
 # Circle Developer Grants — Rialto
 
 Answers against the Cohort 2 Questbook form. Ask: **$100,000 USDC over four milestones.**
-Items marked ⚠ need a decision or a fact only the founder can supply.
+The one item marked ⚠ is a form box only the founder can tick.
 
 > On the size of the ask, plainly: Cohort 1 disbursed $5K–$25K per team, median $10K. This
 > asks for the program maximum. The justification is not ambition, it is scope — an oracle
@@ -174,8 +174,8 @@ over the 259-day simulation. The settled invoice on testnet paid 12.53bp into th
 | $1M | ~$489,000 |
 | $10M | ~$4,890,000 |
 
-$1M a day is roughly 200 invoices of $5,000. The team is also the first liquidity provider,
-so it earns the LP side on its own inventory as well.
+$1M a day is roughly 200 invoices of $5,000. The founder is also the first liquidity
+provider, and earns the LP side on that inventory as well.
 
 **Why this is worth Circle's money specifically.** The volume is *new*. A DeFi pool recycles
 USDC that is already onchain; an invoice settled here is a wire that would otherwise have
@@ -228,7 +228,8 @@ the 15-minute one succeeding, captions burned in, offline-synthesised narration.
 **Video:** https://rialto-arc.netlify.app/rialto-demo.mp4 (narrated cut, hosted with the
 demo; also embedded at the foot of the page).
 
-⚠ Before submitting: the legal entity, full-time status, and confirming the name in the Team section.
+Before submitting: only the Developer Console email and the conflict-of-interest box on the
+form remain; every other field is filled in below.
 
 ## Where this sits next to what is already on Arc
 
@@ -359,7 +360,10 @@ project. That converts Circle's partner deals from announcements into working li
 
 ## Team
 
-**Ashwin Goyal** — solo technical founder, India. ⚠ *(confirm the name as it should appear.)*
+**Ashwin Goyal** — solo technical founder. Individual, India. A student, and full-time on
+Rialto: it has been full-time work for the nine days it has existed, and the grant is what
+keeps it full-time through the twenty-four weeks of the milestones rather than something
+done around a timetable.
 
 What the record supports, and it is the whole case for execution: Rialto was designed,
 built, tested, reviewed, deployed and demonstrated by one person in nine days. 1,584 lines
@@ -369,19 +373,22 @@ solved by Newton iteration; exact-output settlement, multi-hop routing and colla
 forwards. A 259-day backtest on ECB data across six corridors. An adversarial review that
 found and fixed a failure mode worth 37.8% of a pool's book. Source-verified deployment on
 Arc testnet, with a settled invoice and a settled forward on it. A reproducible demo video.
-Previously shipped a production multi-tenant application with webhook-driven billing and
-tenant isolation. ⚠ *(one line each for education and prior roles if you want them; the
-record above can also stand alone.)*
+Before Rialto: Drape, a multi-tenant storefront with subscription billing, payment webhooks
+and tenant-isolation rules, built for an XPRIZE submission — and the postmortem on why it
+had no users, written before this project started. Its first finding was "built for a
+judge, not a shop", and it is the reason Rialto was built the other way round: measure
+first, on real data, and build only what the measurement says.
 
 No co-founder, no network, no customers. That is said in the Distribution section rather
 than hidden in this one, together with the plan that does not need them.
 
-⚠ **Decide before submitting:** legal entity and where incorporated — or "individual,
-incorporating on award" if the form allows it (⚠ check); full-time or not, in one word,
-because Cohort 1 asked and it correlates with selection; Circle Developer Console email;
-GitHub, X, website; conflict-of-interest declaration.
+**Form fields.** Legal entity: *Individual* (incorporating on award if the programme
+requires an entity to receive funds). Full-time: *yes*. GitHub:
+github.com/let-the-dreamers-rise/rialto. Website: rialto-arc.netlify.app. Demo video: the
+URL above. ⚠ Two boxes are yours alone to tick on the form: the Circle Developer Console
+email, and the conflict-of-interest declaration (none known).
 
-An India-based team is fine here. Rialto performs no regulated activity: it is non-custodial
+An individual applicant in India is fine here. Rialto performs no regulated activity: it is non-custodial
 software with no fiat leg, no on- or off-ramp, and no discretionary control of user funds.
 Questbook's terms state grantees "may not perform regulated activities themselves", which
 this satisfies by construction.
@@ -402,7 +409,7 @@ rate re-attested every ten minutes to stay inside the pool's bound — a real va
 implied frequency it does not have. Milestone 1 replaces it with an intraday source.
 
 **Liquidity is the cold start.** The design does not create depth; it stops depth from
-leaking. Bootstrapping is the team's own inventory plus whoever the measured +2.32% attracts.
+leaking. Bootstrapping is the founder's own inventory plus whoever the measured +2.32% attracts.
 That return is what makes the problem tractable rather than circular, but it is still the
 hardest part of the first ninety days.
 
