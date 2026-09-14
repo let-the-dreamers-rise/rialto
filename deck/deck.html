@@ -1,0 +1,178 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Rialto — deck</title><style>
+  @page { size: 1280px 720px; margin: 0 }
+  html,body{margin:0;background:#fff;font:16px/1.45 Calibri,Arial,ui-sans-serif,system-ui,sans-serif;color:#0b0b0b}
+  .s{width:1280px;height:720px;position:relative;overflow:hidden;page-break-after:always;box-sizing:border-box;padding:64px 80px}
+  .dark{background:#0b0b0b;color:#fff}
+  .k{font:700 12px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.18em;text-transform:uppercase;color:#8d8b82;margin:0 0 18px}
+  .light .k{color:#6b6a64}
+  h1{font:700 54px/1.06 Arial,ui-sans-serif,sans-serif;letter-spacing:-.025em;margin:0 0 22px}
+  .light h1{font-size:40px;margin-bottom:26px}
+  .sub{font-size:22px;line-height:1.45;color:#c3c2b7;max-width:900px}
+  .foot{position:absolute;left:80px;right:80px;bottom:44px;font:13px/1.4 ui-monospace,Menlo,monospace;color:#8d8b82}
+  .light .foot{color:#6b6a64}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .stat{background:#f4f3ef;border:1px solid #e6e5e0;border-radius:12px;padding:22px 24px;min-height:150px}
+  .stat b{display:block;font:700 40px/1.1 Arial,sans-serif;letter-spacing:-.02em;margin-bottom:10px}
+  .stat span{font-size:15px;color:#6b6a64;line-height:1.4}
+  .o{color:#eb6834} .g{color:#1baf7a} .bl{color:#2a78d6}
+  .row{display:flex;gap:18px;align-items:flex-start;margin-bottom:14px}
+  .num{flex:none;width:36px;height:36px;border-radius:50%;background:#eb6834;color:#fff;font:700 15px/36px Arial,sans-serif;text-align:center;margin-top:2px}
+  .num.b{background:#2a78d6}
+  .row .n{flex:none;width:210px;font:700 17px/1.3 ui-monospace,Menlo,monospace;margin-top:7px}
+  .row .d{font-size:17.5px;color:#6b6a64;line-height:1.45;margin-top:6px}
+  table{border-collapse:collapse;width:100%;font-size:17px}
+  th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#6b6a64;text-align:left;padding:8px 12px;background:#f4f3ef;border:1px solid #e6e5e0}
+  td{padding:14px 14px;border:1px solid #e6e5e0;vertical-align:top;line-height:1.4}
+  .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:6px}
+  .col{border:1px solid #e6e5e0;border-radius:12px;padding:22px;min-height:250px;background:#f4f3ef}
+  .col.ink{background:#0b0b0b;color:#fff;border-color:#0b0b0b}
+  .col h3{margin:0 0 10px;font-size:19px}
+  .col.ink h3{color:#ffb38a}
+  .col p{margin:0;font-size:15.5px;line-height:1.45;color:#6b6a64}
+  .col.ink p{color:#ddd}
+  .note{font-size:17px;color:#6b6a64;margin-top:30px;line-height:1.5}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:44px 48px}
+  .dcell b{display:block;font:700 40px/1.15 Arial,sans-serif;margin-bottom:8px}
+  .dcell span{font-size:17px;color:#8d8b82}
+  .ch{display:flex;gap:18px;align-items:flex-start}
+  .ch .num{width:32px;height:32px;line-height:32px;font-size:13px}
+  .ch h4{margin:0 0 8px;font-size:21px}
+  .ch p{margin:0;font-size:17px;color:#6b6a64;line-height:1.5}
+</style></head><body>
+
+<section class="s dark">
+  <div class="k">Rialto · Circle Developer Grants · Cohort 2</div>
+  <h1>Pay a foreign invoice<br>in one transaction.</h1>
+  <p class="sub">Cross-border settlement on Arc at the FX rate that actually exists — built on the price oracle Arc launches without.</p>
+  <div class="foot">rialto-arc.netlify.app &nbsp;·&nbsp; github.com/let-the-dreamers-rise/rialto &nbsp;·&nbsp; live on Arc testnet</div>
+</section>
+
+<section class="s light">
+  <div class="k">The problem</div>
+  <h1>A supplier bills you €5,000. You hold dollars.</h1>
+  <div class="grid3">
+    <div class="stat"><b class="o">40–60bp</b><span>through a payments provider, one to three days</span></div>
+    <div class="stat"><b class="o">200–300bp</b><span>through a bank, with nothing linking it back to the invoice</span></div>
+    <div class="stat"><b class="o">0</b><span>price oracles deployed on Arc, two days before mainnet</span></div>
+  </div>
+  <p class="note" style="font-size:17px;color:#0b0b0b;margin-top:34px">Circle has announced partner stablecoins in BRL, MXN, PHP, ZAR, JPY, KRW, CAD and AUD — none trading near 1.00.
+  <span style="color:#6b6a64">The only venue design on Arc is a stableswap that is cheapest at exactly 1.00, because a pool cannot centre on a rate the chain cannot read.</span></p>
+</section>
+
+<section class="s light">
+  <div class="k">Measured · 259 real ECB observations · six corridors</div>
+  <h1>What a pool with no oracle loses in a year</h1>
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:40px;align-items:start">
+    <svg viewBox="0 0 760 360" width="760" height="360" font-family="Calibri,Arial,sans-serif">
+      <g id="bars"></g>
+    </svg>
+    <div>
+      <p style="margin:0 0 8px;font-weight:700;font-size:17px">LP return, per year</p>
+      <p style="margin:0 0 14px;font-size:15px;color:#6b6a64;line-height:1.45">Two pools identical in every respect except where their liquidity sits. Same invariant, amplification, fee and trades.</p>
+      <p style="margin:0 0 14px;font-size:18px;color:#eb6834;font-weight:700;line-height:1.35">A third of the LP's capital, handed to arbitrageurs.</p>
+      <p style="margin:0;font:14px ui-monospace,Menlo,monospace;color:#6b6a64">Reproducible: npm run corridors</p>
+      <p style="margin:14px 0 0;font-size:13.5px;color:#6b6a64"><span style="display:inline-block;width:12px;height:12px;background:#eb6834;border-radius:2px;vertical-align:-1px"></span> 1:1 stableswap &nbsp;&nbsp; <span style="display:inline-block;width:12px;height:12px;background:#2a78d6;border-radius:2px;vertical-align:-1px"></span> Rate-anchored</p>
+    </div>
+  </div>
+</section>
+
+<section class="s light">
+  <div class="k">The solution</div>
+  <h1>Five contracts, deployed and source-verified on Arc testnet</h1>
+  <div class="row"><div class="num">1</div><div class="n">RialtoOracle</div><div class="d">Pull-based FX feed. Publishers sign EIP-712 attestations; the caller names its own staleness bound; a circuit breaker caps any print at 10% fresh, 25% ever.</div></div>
+  <div class="row"><div class="num">2</div><div class="n">RialtoPool</div><div class="d">Stableswap on rate-scaled balances — the cheap part of the curve sits on the real rate and moves with it. 25bp, half to LPs, half to the protocol, in code.</div></div>
+  <div class="row"><div class="num">3</div><div class="n">RialtoSettlement</div><div class="d">Exact-output invoice settlement: denominated in what the payee receives, paid to a third party, reference and rate emitted on-chain.</div></div>
+  <div class="row"><div class="num b">4</div><div class="n">RialtoRouter</div><div class="d">Multi-hop exact-output: N corridors give N(N−1)/2 pairs.</div></div>
+  <div class="row"><div class="num b">5</div><div class="n">RialtoForward</div><div class="d">Collateralised, cash-settled rate locks for invoices with terms.</div></div>
+</section>
+
+<section class="s dark">
+  <div class="k">Demonstrated · every hash opens on Arcscan</div>
+  <h1>Live on Arc testnet.<br>Not a diagram.</h1>
+  <div class="two" style="margin-top:34px">
+    <div class="dcell"><b class="g">EUR 1.00</b><span>received by the payee, exactly as billed</span></div>
+    <div class="dcell"><b>27bp</b><span>all-in: 25bp fee + 2bp slippage on a EUR 20 book</span></div>
+    <div class="dcell"><b>3.00 USDC</b><span>paid by a settled EUR 1,000 forward — exactly the rate move</span></div>
+    <div class="dcell"><b class="g">0.001253 EURC</b><span>protocol revenue from that invoice, on-chain in protocolFees1</span></div>
+  </div>
+  <div class="foot">Oracle updating every 10 minutes unattended &nbsp;·&nbsp; six contracts verified &nbsp;·&nbsp; payer, payee and LP three separate addresses</div>
+</section>
+
+<section class="s light">
+  <div class="k">Revenue · enforced in code</div>
+  <h1>How it makes money</h1>
+  <div class="grid3">
+    <div class="stat"><b>25bp</b><span>the fee — half of Wise, an order of magnitude under a bank</span></div>
+    <div class="stat"><b class="o">12.5bp</b><span>of everything settled goes to the protocol; the split is capped at half by the contract</span></div>
+    <div class="stat"><b class="g">12.53bp</b><span>what the testnet invoice actually paid — read off the pool, not projected</span></div>
+  </div>
+  <table style="margin-top:26px"><tr><th>Daily settled volume</th><th>Annual protocol revenue</th></tr>
+    <tr><td>$250k</td><td>~$122,000</td></tr><tr><td>$1M &nbsp;(≈200 invoices of $5,000)</td><td>~$489,000</td></tr><tr><td>$10M</td><td>~$4,890,000</td></tr></table>
+  <p class="note">The volume is new: an invoice settled here is a wire that would otherwise have gone through correspondent banking.</p>
+</section>
+
+<section class="s light">
+  <div class="k">Scope · said plainly</div>
+  <h1>Which part of the payment this is</h1>
+  <div class="cols">
+    <div class="col"><h3>Getting in — not us</h3><p>Circle Mint, an exchange, or a USDC balance the business already holds.</p></div>
+    <div class="col ink"><h3>The FX leg — this</h3><p>USDC to the exact euro amount billed, at the real rate, 25bp, one transaction, invoice reference on-chain. Nothing on Arc could do this.</p></div>
+    <div class="col"><h3>Getting out — not us</h3><p>The payee holds EURC, or cashes to a local account through a partner — several are Circle grantees.</p></div>
+  </div>
+  <p class="note">No KYC, no fiat ramps, no local payout, no licence to hold client money. Circle already funds that network; what it cannot do today is convert at a rate the chain can verify.</p>
+</section>
+
+<section class="s dark">
+  <div class="k">Why now</div>
+  <h1>Arc mainnet:<br>16 September 2026.</h1>
+  <p class="sub">On that date there is still no price oracle on Arc. The first partner-stablecoin pool that tries to quote will centre on 1.00 — because that is the only number available to it. A day-one problem, not a someday problem.</p>
+  <div class="foot">arc.network/blog/arc-mainnet-goes-live-on-september-16-2026</div>
+</section>
+
+<section class="s light">
+  <div class="k">One founder · no relationships · a plan that does not need them</div>
+  <h1>Distribution without a network — concretely</h1>
+  <div class="two" style="gap:26px 40px">
+    <div class="ch"><div class="num">1</div><div><h4>The two FX teams on Arc need the oracle</h4><p>ViFi and Lunex run pools that cannot read a price. Offer the feed publicly; ask Circle for the introduction. Weeks 1–4.</p></div></div>
+    <div class="ch"><div class="num">2</div><div><h4>Circle's payment grantees are the integrators</h4><p>Hurupay, Blockradar, Payrit move USDC for customers paid in a second currency. A one-page settlement offer plus the live sandbox. Weeks 2–8.</p></div></div>
+    <div class="ch"><div class="num">3</div><div><h4>Launch week</h4><p>Arc ecosystem directory; the "Arc has no oracle" measurement as a technical post with the harness attached. Weeks 0–2.</p></div></div>
+    <div class="ch"><div class="num">4</div><div><h4>India, when the INR stablecoin ships</h4><p>Largest recipient of cross-border service payments; USD/INR already simulated at −33%/yr for 1:1 pools.</p></div></div>
+  </div>
+  <p class="note">The first customers of an FX primitive are protocols and payment apps — reached through an address and an ABI, which one person can produce and has.</p>
+</section>
+
+<section class="s light">
+  <div class="k">The ask</div>
+  <h1>Milestones — $100,000 USDC over 24 weeks</h1>
+  <table><tr><th>#</th><th>Deliverable</th><th>Metric</th><th>Wk</th><th>USDC</th></tr>
+    <tr><td>1</td><td>Oracle + USDC/EURC on Arc mainnet in launch week; 2-of-3 publishers on an intraday source; settlement front end</td><td>Verified mainnet addresses; 14 days publishing; 100 settled invoices</td><td>4</td><td>20,000</td></tr>
+    <tr><td>2</td><td>A corridor per shipped partner stablecoin — BRL, MXN, PHP, ZAR first; CCTP v2 / Gateway; settlement API + SDK</td><td>≥4 corridors; $500k settled; ≥3 external publishers</td><td>10</td><td>25,000</td></tr>
+    <tr><td>3</td><td>Oracle as public infrastructure: independent publishers, any pair on request, integration guide, security review</td><td>≥2 external protocols reading it; ≥8 pairs</td><td>16</td><td>25,000</td></tr>
+    <tr><td>4</td><td>Depth: LP programme, payment-app routing, Circle Wallets, published corridor economics</td><td>$5M settled; ≥25 paying businesses; ≥2 apps</td><td>24</td><td>30,000</td></tr></table>
+  <p class="note">Milestone 1 alone is a coherent deliverable. Milestone 3 is the one worth arguing for: every lending market, perp and prediction market on Arc needs a feed, and none exists.</p>
+</section>
+
+<section class="s dark">
+  <div class="k">Team · individual · India · student · full-time</div>
+  <h1>Ashwin Goyal.<br>One person, nine days.</h1>
+  <p class="sub" style="font-size:19px">1,584 lines of Solidity across six contracts. 71 passing tests. A 259-day backtest on ECB data. An adversarial review that found and fixed a failure mode worth 37.8% of a pool's book. Source-verified deployment, a settled invoice, a settled forward, a reproducible demo video.</p>
+  <p class="sub" style="font-size:19px;margin-top:14px">Before this: Drape, a storefront built for an XPRIZE submission, and its postmortem — "built for a judge, not a shop". Rialto was built the other way round: measure first.</p>
+  <div class="foot">rialto-arc.netlify.app &nbsp;·&nbsp; github.com/let-the-dreamers-rise/rialto</div>
+</section>
+
+<script>
+  // The corridor chart, drawn from the same numbers as the application.
+  const data=[['USD/BRL',-33.36,0.31],['USD/ZAR',-35.05,0.40],['USD/PHP',-35.68,-0.29],['USD/INR',-33.01,-0.32],['USD/TRY',-39.04,-1.20],['EUR/USD',-4.83,-0.17]]
+  const g=document.getElementById('bars'); const W=760,H=360,L=54,R=10,T=18,B=48; const y0=T+((H-T-B)*0.06); const pxPer=(H-T-B-20)/42
+  const el=(n,a)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',n);for(const k in a)e.setAttribute(k,a[k]);return e}
+  const y=(v)=>y0-v*pxPer
+  for(const t of [0,-10,-20,-30,-40]){g.append(el('line',{x1:L,x2:W-R,y1:y(t),y2:y(t),stroke:t===0?'#9a9890':'#ecEAe4','stroke-width':t===0?1:0.8}));const tx=el('text',{x:L-8,y:y(t)+4,'text-anchor':'end','font-size':11,fill:'#6b6a64'});tx.textContent=t+'%';g.append(tx)}
+  const slot=(W-L-R)/data.length
+  data.forEach(([c,a,b],i)=>{const x=L+i*slot+slot*0.18,w=slot*0.28
+    g.append(el('rect',{x,y:Math.min(y(a),y0),width:w,height:Math.abs(y(a)-y0),fill:'#eb6834',rx:2}))
+    g.append(el('rect',{x:x+w+6,y:Math.min(y(b),y0),width:w,height:Math.max(2,Math.abs(y(b)-y0)),fill:'#2a78d6',rx:2}))
+    const la=el('text',{x:x+w/2,y:y(a)+14,'text-anchor':'middle','font-size':10.5,fill:'#0b0b0b','font-weight':700});la.textContent=a.toFixed(1)+'%';g.append(la)
+    const lb=el('text',{x:x+w+6+w/2,y:y0-6,'text-anchor':'middle','font-size':10.5,fill:'#2a78d6','font-weight':700});lb.textContent=(b>0?'+':'')+b.toFixed(2)+'%';g.append(lb)
+    const cl=el('text',{x:L+i*slot+slot/2,y:H-B+22,'text-anchor':'middle','font-size':12.5,fill:'#0b0b0b'});cl.textContent=c;g.append(cl)})
+</script>
+</body></html>

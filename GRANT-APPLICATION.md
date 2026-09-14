@@ -219,14 +219,22 @@ What exists:
   not a testnet deployment that merely exists, but one a reviewer can audit transaction by
   transaction.
 
-**Demo video.** Recorded from the live page by `npm run video` — a scripted Playwright
-walkthrough with the real transactions, the 60-second oracle bound reverting on camera and
-the 15-minute one succeeding, captions burned in, offline-synthesised narration. Two cuts:
-1:50 silent-with-captions and 2:38 narrated. Both reproducible from the repository;
-`scripts/narrate/README.md` has the voice pipeline.
+**Demo video** (4:34, under the 5-minute cap). Two parts, as the form asks. Part one is a
+**codebase walkthrough**: the real source files, rendered at record time, highlighting where
+USDC, EURC and Arc are used — the SDK constants and the native-gas decimal handling, the
+deployment record, the pool holding USDC as token0 and EURC as token1 and pricing off the
+oracle, the fee split into `protocolFees`, the oracle's EIP-712 `submit` and bounded
+`getRate`, settlement's exact-output path to the payee, the script that settled the testnet
+invoice, and the publisher that pays gas in USDC every ten minutes — then the planned
+integrations (CCTP v2, Gateway, Circle Wallets, partner stablecoins) stated as not yet built.
+Part two is the **integration demonstration**: the live page with the settled invoice, the
+settled forward and the oracle reverting on camera at a 60-second bound. Narrated; recorded
+from scripts in the repository (`scripts/code-video.mjs`, `scripts/demo-video.mjs`).
 
-**Video:** https://rialto-arc.netlify.app/rialto-demo.mp4 (narrated cut, hosted with the
-demo; also embedded at the foot of the page).
+**Video:** https://github.com/let-the-dreamers-rise/rialto/blob/main/site/public/rialto-submission.mp4
+(also at https://rialto-arc.netlify.app/rialto-submission.mp4 once the site's next deploy goes through).
+
+**Deck:** https://github.com/let-the-dreamers-rise/rialto/blob/main/deck/rialto-deck.pdf
 
 Before submitting: only the Developer Console email and the conflict-of-interest box on the
 form remain; every other field is filled in below.

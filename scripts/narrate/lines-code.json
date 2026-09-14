@@ -1,0 +1,16 @@
+[
+  { "at": 0.5,   "text": "A walkthrough of where Circle's products live in the Rialto codebase." },
+  { "at": 4.73,  "text": "Arc, U S D C and E U R C are constants. U S D C is Arc's native gas token: eighteen decimals natively, six through E R C twenty." },
+  { "at": 12.76, "text": "Six contracts on Arc testnet, source verified, pointed at the live U S D C and E U R C." },
+  { "at": 19.22, "text": "The pool holds U S D C as token zero, E U R C as token one, and reads the oracle's rate." },
+  { "at": 25.85, "text": "Scaled prices E U R C in U S D C at the oracle rate, so the curve centres on the real price, not on one." },
+  { "at": 33.07, "text": "Every fee splits in code: half to L Ps, half to the protocol. Twelve and a half basis points." },
+  { "at": 39.9,  "text": "The oracle: publishers sign E I P seven twelve attestations; submit recovers each signer, checks quorum, and refuses prints outside the cap." },
+  { "at": 47.92, "text": "Get rate takes the caller's own staleness bound and reverts past it." },
+  { "at": 54.53, "text": "Settlement: an instruction denominated in what the payee receives, with the invoice reference on chain." },
+  { "at": 61.37, "text": "Swap exact out delivers exactly that amount to the payee, and invoice settled records the reference and the rate." },
+  { "at": 68.58, "text": "This script settled the testnet invoice: the payer approves U S D C, calls settle, and the pool pays E U R C to the payee." },
+  { "at": 76.4,  "text": "The publisher runs every ten minutes on Netlify: fetch the E C B print, sign it, pay gas in U S D C, submit." },
+  { "at": 83.81, "text": "Not in the code yet, and said so: C C T P version two and Gateway, Circle Wallets, partner stablecoins as they ship." },
+  { "at": 92.0,  "text": "Now the product, live." }
+]
