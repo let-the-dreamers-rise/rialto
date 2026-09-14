@@ -152,18 +152,31 @@ dark('Pay a foreign invoice\nin one transaction.', 'RIALTO · CIRCLE DEVELOPER G
   T(s, 0.6, 5.0, 8.8, 0.4, { text: 'Milestone 1 alone is a coherent deliverable. Milestone 3 is the one worth arguing for: every lending market, perp and prediction market on Arc needs a feed, and none exists.', fontSize: 11, color: MUTE, valign: 'top' }) }
 
 // 11 · team
-{ const s = dark('I build systems a stranger\ncan re-derive. Then I attack them.', 'TEAM · ASHWIN GOYAL · INDIVIDUAL · INDIA · STUDENT · FULL-TIME')
-  const cells = [
-    ['Germline', 'Verifiable AI-configuration tuning, live on 0G mainnet — every step recorded on-chain.'],
-    ['BIP 360 conformance', 'From-scratch implementation vs the official reference: 13 vectors, 2,000 random trees, two real gaps found in the reference.'],
-    ['USDC/CCTP · Circle Wallets', 'Already shipped: proofflow (USDC, CCTP, Arcium MPC, live) and an agent on Circle Developer Controlled Wallets.'],
-    ['Rialto, nine days', 'Six verified contracts, 71 tests, a 259-day backtest, an adversarial review, a settled invoice and forward, a demo video.'],
+{ const s = pres.addSlide(); s.background = { color: INK }
+  T(s, 0.7, 0.55, 8.6, 0.3, { text: 'TEAM · ASHWIN GOYAL · INDIVIDUAL · INDIA · STUDENT · FULL-TIME', fontSize: 11, color: '8D8B82', charSpacing: 4, bold: true })
+  T(s, 0.7, 0.95, 8.6, 1.0, { text: 'I build systems a stranger can re-derive.\nThen I attack them.', fontSize: 27, color: 'FFFFFF', bold: true, fontFace: FH, valign: 'top' })
+  T(s, 0.7, 2.05, 5.0, 0.25, { text: 'SHIPPED BEFORE RIALTO', fontSize: 9.5, color: '6B6A64', charSpacing: 3, bold: true })
+  const rows = [
+    ['Germline', 'Verifiable AI-configuration tuning, live on 0G mainnet; every step recorded on-chain.', 'FFFFFF'],
+    ['BIP 360 conformance', 'From-scratch implementation vs the official reference, 13 vectors and 2,000 random trees: two real gaps found in the reference.', 'FFFFFF'],
+    ['rein', 'A smart account an agent can operate and cannot drain. Verified source; six attacks lost nothing. 46 tests.', 'FFFFFF'],
+    ['proofflow', 'Revenue-based credit for emerging-market SMBs on Solana, built on USDC and CCTP, Arcium MPC. Live.', 'FFB38A'],
+    ['economic-immune-system', 'Transaction authorisation against a budget policy, built on Circle Developer Controlled Wallets.', 'FFB38A'],
   ]
-  cells.forEach(([b, l], i) => {
-    const x = 0.7 + (i % 2) * 4.45, y = 3.05 + Math.floor(i / 2) * 1.0
-    T(s, x, y, 4.2, 0.42, { text: b, fontSize: 17, bold: true, color: 'FFFFFF', fontFace: FH })
-    T(s, x, y + 0.42, 4.2, 0.55, { text: l, fontSize: 10.5, color: '8D8B82', valign: 'top' })
+  rows.forEach(([n, d, c], i) => {
+    const y = 2.35 + i * 0.5
+    T(s, 0.7, y, 1.45, 0.48, { text: n, fontSize: 10.5, bold: true, color: c, valign: 'top' })
+    T(s, 2.2, y, 3.5, 0.48, { text: d, fontSize: 9.5, color: 'C3C2B7', valign: 'top' })
   })
-  T(s, 0.7, 5.0, 8.6, 0.35, { text: 'github.com/let-the-dreamers-rise · 123 repositories · 901 contributions in the last year · rialto-arc.netlify.app', fontSize: 10.5, color: '8D8B82', fontFace: 'Courier New' }) }
+  T(s, 0.7, 4.85, 5.0, 0.4, { text: 'So CCTP and Circle Wallets, marked planned in the milestones, are products I have already shipped with. What is new is Arc, and the primitive Arc is missing.', fontSize: 9, color: '8D8B82', italic: true, valign: 'top' })
+  T(s, 6.1, 2.05, 3.2, 0.25, { text: 'RIALTO · NINE DAYS · ONE PERSON', fontSize: 9.5, color: '6B6A64', charSpacing: 3, bold: true })
+  const stats = [['6', 'contracts, source-verified on Arc', 'FFFFFF'], ['71', 'passing tests', 'FFFFFF'], ['259', 'days of ECB data, six corridors', 'FFFFFF'],
+    ['37.8→3.2%', 'oracle failure mode, found and bounded', OK], ['1 + 1', 'invoice and forward, settled on-chain', OK], ['4:34', 'demo video, reproducible from the repo', 'FFFFFF']]
+  stats.forEach(([b, l, c], i) => {
+    const x = 6.1 + (i % 2) * 1.65, y = 2.35 + Math.floor(i / 2) * 0.82
+    T(s, x, y, 1.6, 0.4, { text: b, fontSize: 20, bold: true, color: c, fontFace: FH })
+    T(s, x, y + 0.4, 1.6, 0.4, { text: l, fontSize: 8.5, color: '8D8B82', valign: 'top' })
+  })
+  T(s, 0.7, 5.15, 8.6, 0.3, { text: 'github.com/let-the-dreamers-rise · 123 repositories · 901 contributions in the last year · rialto-arc.netlify.app', fontSize: 10, color: '8D8B82', fontFace: 'Courier New' }) }
 
 pres.writeFile({ fileName: 'rialto-deck.pptx' }).then((f) => console.log('wrote', f))
