@@ -158,9 +158,10 @@ while the ability to steer the feed dies. Custody of that key is the single larg
 to this deployment, ahead of anything in §1.
 
 *Partially mitigated, 14 September.* The site now generates and holds its own publisher key
-in Netlify Blobs — never printed, never pasted — and posts with it every ten minutes once the
-admin has authorised the address at `/api/publisher`. That takes the *feed* off the ephemeral
-machine: it keeps updating whether or not that machine exists. It does not move the admin
+in Netlify Blobs — never printed, never pasted — and posts with it every ten minutes. The
+admin authorised the address at `/api/publisher` and the first unattended post landed at
+16:30 UTC the same day, carrying that day's ECB print, from the site's key. That takes the
+*feed* off the ephemeral machine: it keeps updating whether or not that machine exists. It does not move the admin
 role, the treasury or the LP position, which remain on the deployer key. A key the site
 holds is a key the site's account controls; that is a Netlify login rather than a
 container, which is better, and it is not a hardware wallet, which would be better still.

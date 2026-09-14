@@ -113,7 +113,11 @@ keeps in Netlify Blobs — the site's own storage. The key has never been printe
 pasted anywhere; the only thing that leaves is the address, at
 [`/api/publisher`](https://rialto-arc.netlify.app/api/publisher), currently
 `0xA00adD79b3e315A5F3c4bC393550343fF1A7BEed`. Two things have to be true for it to post:
-the oracle admin must have authorised it, and it must hold gas.
+the oracle admin must have authorised it, and it must hold gas. Both are true: it was
+authorised in [`0x157fe1ef…`](https://testnet.arcscan.app/tx/0x157fe1efbdcd44edf514bd8b70e370b6c412a9f1e04ab9730ae0cbd477e90732)
+and its first unattended post was
+[`0x6d132dea…`](https://testnet.arcscan.app/tx/0x6d132dea02e147523324661889cfe939fb3c0327cda642a762672cf0d80db703)
+— the ECB print of the day, fetched and signed by the site on its own schedule.
 
 ```bash
 npm run authorise -- 0xA00adD79b3e315A5F3c4bC393550343fF1A7BEed      # setPublisher + 3 USDC gas

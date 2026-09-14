@@ -392,8 +392,10 @@ this satisfies by construction.
 
 **A one-publisher oracle is a trusted oracle.** The contract supports M-of-N and the deploy
 script takes a publisher list, but a first deployment at quorum 1 means the deployer can set
-the rate, and therefore the price the pool trades at. On the testnet deployment that one key
-is also the oracle admin, the pool treasury and the sole LP. This is the main open risk;
+the rate, and therefore the price the pool trades at. On the testnet deployment the feed is
+posted every ten minutes by a key the site generated and holds itself, authorised by the
+admin; the deployer key remains the oracle admin, the pool treasury and the sole LP. This is
+the main open risk;
 milestone 1 takes it to 2-of-3 and milestone 3 to an independent set. It is a coordination
 problem, not a code problem. A related one: the current feed is the ECB's daily reference
 rate re-attested every ten minutes to stay inside the pool's bound — a real value with an
